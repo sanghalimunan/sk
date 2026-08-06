@@ -131,15 +131,36 @@ function App() {
   const todayTasks=data.tasks.filter(t=>t.date===iso()), todayEvents=data.events.filter(e=>e.date===iso()).sort((a,b)=>a.start.localeCompare(b.start))
   const weeklyProgress=Math.round((pct(data.weekly.draftPages,data.weekly.draftTarget)+pct(data.weekly.articles,data.weekly.articleTarget)+pct(data.weekly.writingHours,data.weekly.writingTarget))/3)
 
-  const initGoogleClient=(callback)=>{
+  const loadGoogleIdentity=()=>new Promise((resolve,reject)=>{
+    if(window.google?.accounts?.oauth2)return resolve(window.google)
+    const existing=document.querySelector('script[data-strategisk-gsi]')||document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+    const script=existing||document.createElement('script')
+    let settled=false
+    const done=()=>{if(settled)return;settled=true;window.google?.accounts?.oauth2?resolve(window.google):reject(new Error('Google Identity tidak dapat dimuatkan pada browser ini.'))}
+    const fail=()=>{if(settled)return;settled=true;reject(new Error('Google Identity gagal dimuatkan. Buka aplikasi menggunakan Chrome atau Safari biasa.'))}
+    script.addEventListener('load',done,{once:true})
+    script.addEventListener('error',fail,{once:true})
+    if(!existing){
+      script.src='https://accounts.google.com/gsi/client'
+      script.async=true
+      script.defer=true
+      script.dataset.strategiskGsi='1'
+      document.head.appendChild(script)
+    }
+    setTimeout(()=>{if(window.google?.accounts?.oauth2)done();else fail()},10000)
+  })
+  const initGoogleClient=async(callback)=>{
     const clientId=import.meta.env.VITE_GOOGLE_CLIENT_ID
     if(!clientId){setModal('google-help');return}
-    if(!window.google?.accounts?.oauth2){showToast('Google Identity belum siap. Cuba semula sebentar lagi.');return}
+    try{await loadGoogleIdentity()}catch(e){showToast(e.message);return}
     tokenClientRef.current=window.google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_SCOPE,callback:async(response)=>{
       if(response.error)return showToast(`Google: ${response.error}`)
       const token=response.access_token
       let profile=null;try{profile=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json())}catch{}
       setDrive(x=>({...x,token,profile}));callback?.(token)
+    },error_callback:(err)=>{
+      const type=err?.type||'popup_failed'
+      showToast(type==='popup_failed_to_open'?'Popup Google disekat. Benarkan pop-up dan cuba semula.':type==='popup_closed'?'Login Google dibatalkan.':`Google login gagal: ${type}`)
     }})
     tokenClientRef.current.requestAccessToken({prompt:drive.token?'':'consent'})
   }

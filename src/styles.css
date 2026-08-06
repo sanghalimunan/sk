@@ -102,3 +102,49 @@
   .timeline-node small{font-size:7px}
   .top-actions .icon-btn{width:36px;height:36px}
 }
+
+/* v6 — phone-first professional layout and complete diagrams */
+@media (max-width: 900px){
+  :root{--mobile-pad:14px}
+  html{font-size:17px}
+  body{font-size:16px;overflow-x:hidden}
+  main{width:100%;min-width:0}
+  .content{padding:12px var(--mobile-pad) 92px;max-width:100%;overflow-x:hidden}
+  .topbar{height:auto;min-height:76px;padding:10px var(--mobile-pad);gap:10px;align-items:center}
+  .welcome{min-width:0;flex:1}.welcome h1{font-size:20px;line-height:1.2;white-space:normal}.welcome p{font-size:13px;line-height:1.35;margin-top:3px}
+  .top-actions{gap:6px}.top-actions .avatar{display:none}.drive-button{min-width:44px;padding:10px 12px}.drive-button span{font-size:12px}
+  .dashboard-grid,.settings-grid,.weekly-layout,.monthly-layout{grid-template-columns:1fr!important;width:100%;gap:12px}
+  .span-2,.span-3{grid-column:1!important}
+  .card{width:100%;min-width:0;padding:17px 16px;border-radius:14px}
+  .card-title h3{font-size:16px;line-height:1.25}.card-title span{width:34px;height:34px}
+  .section-title h2{font-size:18px}.section-title p{font-size:13px}
+  .countdown-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .countdown-card{min-height:152px;padding:15px;overflow:hidden}.countdown-card h3{font-size:15px}.countdown-card span,.countdown-card p{font-size:12px}.countdown-card strong{font-size:38px}
+  .dashboard-task-list{grid-template-columns:1fr}.dashboard-task-list .task-row{min-height:66px;padding:14px}.dashboard-task-list .task-row span{font-size:17px}.dashboard-task-list .task-row small{font-size:12px}
+  .task-row{font-size:15px}.task-row b{font-size:16px}.task-row small{font-size:12px}
+  .metric-label{font-size:13px}.metric-label b{font-size:22px}
+  .diary-snippet,.win-card p,.consult-mini,.schedule b,.schedule span{font-size:15px;line-height:1.5}
+  .diary-photo-card{min-height:330px}.diary-photo-view img,.diary-photo-empty{height:260px}
+  .proof-upload-large{min-height:190px}.proof-upload-large img{height:150px}.proof-upload-large span{font-size:12px}
+  input,textarea,select{width:100%;font-size:16px!important;padding:13px 12px;min-height:46px}
+  .primary,.secondary,.soft-btn,.whatsapp,.telegram,.danger-btn{font-size:14px;min-height:46px;padding:11px 14px}
+  .button-row{display:grid;grid-template-columns:1fr;gap:8px}.button-row>*{width:100%;justify-content:center}
+  .mobile-nav{height:76px;padding-bottom:env(safe-area-inset-bottom)}.mobile-nav button{font-size:11px;gap:4px}.mobile-nav svg{width:22px;height:22px}
+  table{font-size:13px}th{font-size:12px}
+  .gantt-compact{overflow:visible}.gantt-scale{display:none}.gantt-compact-track{display:grid;gap:12px}.gantt-compact-track>i{display:none}
+  .gantt-compact-row{display:grid;grid-template-columns:1fr;gap:7px;padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2)}
+  .gantt-compact-row>strong{font-size:14px;white-space:normal;overflow:visible}.gantt-compact-row>div{height:28px;width:100%;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),var(--line) calc(10% - 1px),var(--line) 10%)}
+  .gantt-compact-bar{top:5px;height:18px}.gantt-compact-row>small{font-size:12px;text-align:left;color:var(--text);font-weight:700}
+  .timeline-card{overflow:visible}
+  .consult-editor-v2{grid-template-columns:1fr!important;gap:10px}.consult-editor-v2>*{width:100%}
+  .publication-delete,.expert-row,.phase-row{grid-template-columns:1fr!important}
+  .modal{width:calc(100vw - 20px);max-height:92vh;padding:17px}.modal-wide{width:calc(100vw - 20px)}
+}
+@media (max-width: 520px){
+  html{font-size:18px}.content{padding:10px 9px 92px}.topbar{padding:9px}.welcome h1{font-size:18px}.welcome p{font-size:12px}
+  .drive-button span{display:none}.drive-button{width:42px;padding:0;justify-content:center}.menu-btn,.top-actions .icon-btn{width:42px;height:42px}
+  .countdown-grid{grid-template-columns:1fr}.countdown-card{min-height:138px}.countdown-card strong{font-size:40px}
+  .card{padding:16px 14px}.card-title h3{font-size:16px}
+  .dashboard-task-list .task-row span{font-size:18px}
+  .diary-photo-view img,.diary-photo-empty{height:290px}
+}

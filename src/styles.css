@@ -425,3 +425,66 @@ body{font-size:14px;line-height:1.45}
   .reference-links>div{grid-template-columns:1fr auto}
   .pen-board canvas{aspect-ratio:1.45/1}
 }
+
+
+/* v21: restore calendar desktop layout + full-width Learning Point workspace */
+.calendar-toolbar{display:flex;justify-content:flex-end;align-items:center;margin-bottom:0}
+.calendar-search-toggle{min-width:104px;justify-content:center}
+.calendar-page-wrap{width:100%;max-width:none;display:grid;gap:14px}
+.calendar-page-wrap>.page-grid{display:grid!important;grid-template-columns:minmax(0,2fr) minmax(300px,1fr)!important;gap:16px!important;width:100%}
+.calendar-page-wrap .calendar-full{grid-column:auto!important;width:100%;padding:16px!important}
+.calendar-page-wrap .day-panel{grid-column:auto!important;width:100%;padding:16px!important;min-height:0}
+.calendar-page-wrap .month-grid,.calendar-page-wrap .weekdays{width:100%;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.calendar-page-wrap .month-grid button,.calendar-page-wrap .month-grid>div{aspect-ratio:1.2!important;min-height:58px!important}
+.calendar-page-wrap .month-grid button span{font-size:15px!important;font-weight:800}
+.calendar-page-wrap .calendar-head h2{font-size:20px}
+.calendar-page-wrap .weekdays b{font-size:11px;padding:8px}
+.calendar-page-wrap .calendar-diary-image img{max-height:360px}
+/* Learning Point becomes a true full-width workspace */
+.learning-layout{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:none!important;gap:14px!important;align-items:start}
+.learning-index{position:static!important;width:100%!important;max-height:none!important;overflow:visible!important;padding:15px 16px!important}
+.learning-index-head{margin-bottom:10px}
+.learning-index-list{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important;overflow:visible!important}
+.learning-index-list>button{min-width:0!important;width:100%;border:1px solid var(--line);background:var(--surface-2);padding:10px 11px}
+.learning-index-list>button.active{background:var(--soft);border-color:#e8a0ba}
+.learning-editor{display:block!important;width:100%!important;max-width:none!important;min-width:0!important}
+.learning-main{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;padding:22px 24px!important;grid-column:1/-1!important}
+.learning-title-fields{grid-template-columns:minmax(0,1fr) 170px!important}
+.learning-notes{width:100%!important;min-height:300px}
+.learning-gallery{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.prompt-library{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.reference-links>div{grid-template-columns:minmax(180px,.9fr) minmax(280px,1.8fr) auto auto!important}
+.pen-board canvas{width:100%!important;max-width:none!important}
+@media(max-width:1100px){
+ .calendar-page-wrap>.page-grid{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr)!important}
+ .learning-index-list{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .learning-gallery{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:900px){
+ .calendar-page-wrap>.page-grid{grid-template-columns:1fr!important;gap:10px!important}
+ .calendar-page-wrap .calendar-full,.calendar-page-wrap .day-panel{grid-column:1!important}
+ .calendar-toolbar{justify-content:flex-end}
+ .learning-index-list{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .learning-title-fields{grid-template-columns:1fr 150px!important}
+}
+@media(max-width:620px){
+ .calendar-page-wrap{gap:8px}
+ .calendar-toolbar{margin:0}.calendar-search-toggle{min-width:94px;padding:9px 11px}
+ .calendar-page-wrap>.page-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+ .calendar-page-wrap .calendar-full,.calendar-page-wrap .day-panel{padding:12px 10px!important}
+ .calendar-page-wrap .month-grid,.calendar-page-wrap .weekdays{gap:4px}
+ .calendar-page-wrap .month-grid button,.calendar-page-wrap .month-grid>div{min-height:48px!important;aspect-ratio:1.08!important}
+ .calendar-page-wrap .month-grid button span{font-size:14px!important}
+ .learning-layout{gap:8px!important}
+ .learning-index{padding:11px!important;margin:0!important}
+ .learning-index-list{display:flex!important;overflow-x:auto!important;gap:6px!important;padding-bottom:3px}
+ .learning-index-list>button{min-width:155px!important;flex:0 0 155px}
+ .learning-main{padding:12px!important}
+ .learning-title-row{display:grid!important}
+ .learning-title-fields{grid-template-columns:1fr!important}
+ .learning-notes{min-height:240px!important}
+ .learning-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .prompt-library{grid-template-columns:1fr!important}
+ .reference-links>div{grid-template-columns:1fr auto!important}
+ .reference-links>div input:nth-child(2){grid-column:1/-1;grid-row:2}
+}

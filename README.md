@@ -1,4 +1,17 @@
-# strategiSK — Personal PhD Planning OS
+# strategiSK PhD OS v9
+
+Personal PhD planning dashboard for a 2.5-year GBT target.
+
+## v9 UI refinements
+- Century Gothic typography standardized across desktop, tablet and phone.
+- Desktop dashboard aligned to a strict 12-column grid.
+- Data Collection and Data Analysis now use the same full-width progress-bar style as Chapter Progress.
+- Weekly Target ring and text brought closer together.
+- Larger, standardized heading/body text.
+- Mobile layout compacted to maximize usable screen space while keeping text readable.
+- Timeline, diary, schedule and progress cards optimized for small screens.
+
+# strategiSK PhD OS v8
 
 Aplikasi responsive untuk memantau perjalanan PhD GBT 2.5 tahun: Draft 111, kalendar, diari/TDR, TM168, FOW, FOD, task, konsultasi SV, expert, publication, pengumpulan data dan analisis.
 

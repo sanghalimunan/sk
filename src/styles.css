@@ -337,3 +337,22 @@ body{font-size:14px;line-height:1.45}
 .brand-button:hover{background:#ffffff08;transform:translateY(-1px)}
 .brand-button:active{transform:translateY(0) scale(.99)}
 .brand-button:focus-visible{outline:2px solid #ed2965;outline-offset:3px}
+
+
+/* v17 Calendar & Diary improvements */
+.month-grid button>span{font-size:16px;font-weight:800;line-height:1}
+.day-panel{position:relative;padding-bottom:78px}
+.calendar-actions{margin:14px 0 12px}
+.calendar-diary-detail{border-top:1px solid var(--line);padding-top:16px;margin-top:4px;display:grid;gap:12px}
+.calendar-diary-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.calendar-diary-head h3{margin:3px 0 0;font-size:16px}
+.calendar-diary-image{display:block;width:100%;border-radius:12px;overflow:hidden;background:var(--soft)}
+.calendar-diary-image img{display:block;width:100%;max-height:360px;object-fit:cover}
+.calendar-reflection{font-size:15px;line-height:1.7;margin:0;color:var(--ink);white-space:pre-wrap}
+.calendar-diary-meta{font-size:12px;font-weight:700;color:var(--pink)}
+.calendar-diary-empty{margin-top:12px;padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);display:flex;align-items:center;gap:10px;font-size:13px}
+.hijri-card{position:absolute;right:16px;bottom:16px;display:grid;text-align:right;gap:3px;padding:8px 10px;border-radius:9px;background:var(--soft);border:1px solid var(--line);max-width:190px}
+.hijri-card small{font-size:8px;letter-spacing:.12em;color:var(--pink);font-weight:900}
+.hijri-card strong{font-size:11px;line-height:1.3}
+.diary-snippet p{font-size:12px;line-height:1.6}
+@media(max-width:620px){.month-grid button>span{font-size:17px}.day-panel{padding-bottom:82px}.calendar-diary-image img{max-height:280px}.calendar-reflection{font-size:14px;line-height:1.65}.calendar-diary-head h3{font-size:14px}.hijri-card{right:12px;bottom:12px;max-width:165px}.hijri-card strong{font-size:10px}}

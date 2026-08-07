@@ -130,3 +130,7 @@ Untuk akaun WhatsApp personal, browser hanya boleh membuka mesej yang sudah diis
 ### Maksud `drive.appdata`
 
 `drive.appdata` bukan fail atau plugin. Ia ialah OAuth scope Google. Anda hanya perlu enable Google Drive API dan menggunakan Google OAuth Client ID. Kod aplikasi sudah meminta scope tersebut semasa pengguna menekan Sambung Drive.
+
+
+## v11
+Mobile stacked dashboard, 2-column days remaining, chapter web chart, expert cards with photo/notes, Monday-start local calendar fix, and dashboard task limit of six active items.

@@ -313,3 +313,20 @@ body{font-size:14px;line-height:1.45}
 @media(max-width:1280px){.gantt-years,.gantt-month-pips{margin-left:146px;margin-right:70px}.gantt-dot-row{grid-template-columns:136px minmax(0,1fr) 70px}}
 @media(max-width:900px){.dashboard-core>.draft-card-wide{grid-column:span 2!important}.draft-card-inner{grid-template-columns:1fr;justify-items:center;text-align:center}.draft-card-copy{text-align:center}.draft-card-wide .metric-label{text-align:center}.gantt-years,.gantt-month-pips{margin-left:112px;margin-right:0}.gantt-dot-row{grid-template-columns:104px minmax(0,1fr);gap:8px}.gantt-dot-row>small{display:none}}
 @media(max-width:620px){.dashboard-core>.draft-card-wide{grid-column:1!important}.draft-card-inner{grid-template-columns:130px 1fr;gap:10px;min-height:auto;align-items:center}.draft-card-copy{gap:8px;text-align:left}.draft-card-wide .metric-label{text-align:left}.draft-card-copy .muted{font-size:10.5px}.gantt-dots{gap:5px}.gantt-years{margin-left:92px;margin-right:0;gap:3px}.gantt-years span{font-size:8px;padding-bottom:1px}.gantt-month-pips{margin-left:92px;margin-right:0;gap:3px}.gantt-month-pips i{height:4px}.gantt-dot-table{gap:6px}.gantt-dot-row{grid-template-columns:84px minmax(0,1fr);gap:6px}.gantt-dot-row>strong{font-size:8px;white-space:normal}.gantt-dot-track{gap:3px}.gdot{border-radius:3px}.timeline-card{padding-top:10px!important;padding-bottom:10px!important}}
+
+
+/* v14 minimal dot gantt + centered draft */
+.draft-card-centered{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:205px;text-align:center}
+.draft-card-centered .ring{margin:0 auto}
+.draft-current{margin:0!important;text-align:center!important;align-items:center}
+.draft-current b{font-size:18px}
+.draft-update-btn{width:min(260px,100%);justify-content:center;margin-top:2px}
+.gantt-dot-track{align-items:center}
+.gdot-slot{display:block;width:100%;height:8px}
+.gdot{width:8px!important;height:8px!important;aspect-ratio:auto!important;border-radius:50%!important;justify-self:center;background:transparent;border:0!important}
+.gdot.plan{background:#f0a4bf!important;box-shadow:none}
+.gdot.done{background:var(--pink)!important;box-shadow:0 0 0 1px #cf0a4e18}
+.gdot.now{outline:2px solid #f1c643;outline-offset:2px}
+.gantt-month-pips i{height:3px;border-radius:50%;background:transparent}
+.gantt-month-pips i.active{width:6px;height:6px;justify-self:center;background:#c99100;box-shadow:none}
+@media(max-width:620px){.gantt-dot-track{gap:2px}.gdot{width:6px!important;height:6px!important}.gdot-slot{height:6px}.gantt-years{margin-left:88px}.gantt-month-pips{margin-left:88px}.draft-card-centered{min-height:190px}.draft-update-btn{width:100%}}

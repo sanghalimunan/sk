@@ -148,3 +148,98 @@
   .dashboard-task-list .task-row span{font-size:18px}
   .diary-photo-view img,.diary-photo-empty{height:290px}
 }
+
+/* v8 Google Drive diagnostics */
+.drive-diagnostics{display:grid;gap:8px;margin:12px 0 14px;padding:12px;border:1px solid var(--line,#e5e7eb);border-radius:14px;background:rgba(127,127,127,.045)}
+.drive-diagnostics>div{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;font-size:.86rem}
+.drive-diagnostics span{color:var(--muted,#6b7280)}
+.drive-diagnostics b{text-align:right;max-width:68%;overflow-wrap:anywhere}
+.diag-ok{color:#118a57!important}.diag-warn{color:#b7791f!important}.drive-diagnostics .diag-error{display:block;padding-top:8px;border-top:1px solid var(--line,#e5e7eb)}
+.drive-diagnostics .diag-error span{display:block;margin-bottom:5px}.drive-diagnostics .diag-error b{display:block;max-width:none;text-align:left;color:#d61f5c;line-height:1.45}
+@media(max-width:700px){.drive-diagnostics{padding:14px}.drive-diagnostics>div{font-size:.95rem}.drive-diagnostics b{max-width:62%}.settings-grid .button-row button{min-height:48px;font-size:1rem}}
+
+/* v9 — typography, aligned desktop dashboard and compact professional mobile */
+html,body,#root,button,input,textarea,select,table{font-family:"Century Gothic","CenturyGothic","AppleGothic","Aptos",Arial,sans-serif}
+body{font-size:14px;line-height:1.45}
+.card-title h3,.section-title h2,.sidebar nav button,.primary,.secondary,.soft-btn,.drive-button{font-weight:700;letter-spacing:.01em}
+.card-title h3{font-size:13px}.section-title h2{font-size:15px}.muted{font-size:11.5px}
+.progress-list>div>div:first-child{font-size:11px;align-items:center}.progress-list b{font-size:11px}.bar{height:6px;margin-top:6px}
+
+/* Desktop: strict 12-column rows */
+@media (min-width:901px){
+  .dashboard-grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:stretch}
+  .dashboard-grid>.card{grid-column:span 3;min-width:0}
+  .dashboard-grid>.timeline-card{grid-column:span 6}
+  .dashboard-grid>.chapter-progress-card,.dashboard-grid>.schedule-card{grid-column:span 3}
+  .dashboard-grid>.draft-card,.dashboard-grid>.full-progress-card,.dashboard-grid>.weekly-target-card{grid-column:span 3}
+  .timeline-card,.chapter-progress-card,.schedule-card{min-height:315px}
+  .draft-card,.full-progress-card,.weekly-target-card{min-height:260px}
+  .weekly-summary{justify-content:flex-start;gap:10px}
+  .weekly-summary .mini-list{flex:0 1 155px;min-width:135px}
+  .weekly-summary .ring{margin-right:2px}
+  .full-progress-card .progress-list,.chapter-progress-card .progress-list{width:100%}
+  .full-progress-card .progress-list{gap:14px}
+  .mountain-card{min-height:255px}
+}
+
+/* Tablet: use space efficiently without tiny cards */
+@media (min-width:621px) and (max-width:900px){
+  html{font-size:16px}
+  .content{padding:12px 12px 88px}
+  .countdown-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}
+  .dashboard-grid>.card{grid-column:span 1!important;padding:15px;min-height:0}
+  .dashboard-grid>.timeline-card{grid-column:1/-1!important}
+  .card-title h3{font-size:15px}.section-title h2{font-size:17px}
+  .progress-list>div>div:first-child,.progress-list b{font-size:12px}
+  .weekly-summary{gap:10px;justify-content:flex-start}.weekly-summary .mini-list{flex:0 1 170px}
+  .diary-photo-card{min-height:0}.diary-photo-view img,.diary-photo-empty{height:210px}
+}
+
+/* Phone: compact, full-width, no oversized dead space */
+@media (max-width:620px){
+  html{font-size:16px}
+  body{font-size:15px}
+  .content{padding:8px 8px 82px}
+  .topbar{min-height:66px;padding:8px 9px}
+  .welcome h1{font-size:18px}.welcome p{font-size:11.5px}
+  .section-title{gap:8px;margin-bottom:8px}.section-title h2{font-size:16px}.section-title p{font-size:11.5px}
+  .countdown-grid{gap:7px;margin-bottom:9px}.countdown-card{min-height:118px;padding:12px 13px;border-radius:11px}
+  .countdown-card h3{font-size:14px;margin:5px 0 6px}.countdown-card span{font-size:10px}.countdown-card strong{font-size:32px}.countdown-card strong small{font-size:13px}.countdown-card p{font-size:10.5px;margin-top:6px}.countdown-card>svg{width:48px;height:48px}
+  .task-highlight{margin:8px 0 9px;padding:13px}.dashboard-task-list .task-row{min-height:50px;padding:10px 11px}.dashboard-task-list .task-row span{font-size:16px;line-height:1.25}.dashboard-task-list .task-row small{font-size:10.5px}
+  .dashboard-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px}
+  .dashboard-grid>.card{grid-column:1!important;min-height:0!important;padding:13px 12px;border-radius:11px}
+  .card-title{margin-bottom:8px}.card-title h3{font-size:15px}.card-title span{width:30px;height:30px}
+  .muted{font-size:11px}.progress-list{gap:9px}.progress-list>div>div:first-child,.progress-list b{font-size:12px}.bar{height:6px;margin-top:5px}
+  .full-progress-card .progress-list,.chapter-progress-card .progress-list{width:100%}
+  .weekly-summary{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center;justify-content:start}.weekly-summary .ring{margin:0}.weekly-summary .mini-list{gap:6px;font-size:11.5px}.weekly-summary .mini-list span{justify-content:flex-start;gap:7px}.weekly-summary .mini-list b{margin-left:auto}
+  .schedule-list{gap:3px}.schedule{padding:9px 10px}.schedule b,.schedule span{font-size:12px;line-height:1.3}
+  .gantt-compact-track{gap:7px}.gantt-compact-row{padding:9px 10px;gap:5px}.gantt-compact-row>strong{font-size:12.5px}.gantt-compact-row>div{height:22px}.gantt-compact-bar{top:4px;height:14px}.gantt-compact-row>small{font-size:10.5px}
+  .diary-snippet,.win-card p,.consult-mini{font-size:13px;line-height:1.45}.diary-snippet p,.win-card p,.consult-mini p{margin:6px 0}
+  .diary-photo-card{min-height:0}.diary-photo-view img,.diary-photo-empty{height:185px;margin-top:6px}.diary-photo-empty{font-size:11px}
+  .mountain-card{min-height:190px}.mountain{width:90px;height:76px;opacity:.55}
+  .metric-label{margin:3px 8px 8px;font-size:11px}.metric-label b{font-size:17px}
+  .draft-card .ring{margin:0 auto 3px}
+  .link-btn{margin-top:7px;font-size:11px}
+  .mobile-nav{height:68px}.mobile-nav button{font-size:9.5px}.mobile-nav svg{width:20px;height:20px}
+}
+
+
+/* v10 dashboard alignment refinements */
+.dashboard-grid{grid-template-columns:repeat(12,minmax(0,1fr))!important;align-items:stretch}
+.dashboard-grid>.timeline-card{grid-column:span 6!important}
+.dashboard-grid>.chapter-progress-card,.dashboard-grid>.schedule-card,.dashboard-grid>.draft-card,.dashboard-grid>.full-progress-card,.dashboard-grid>.weekly-target-card,.dashboard-grid>.mountain-card,.dashboard-grid>.slider-card{grid-column:span 3!important}
+.dashboard-grid>.consultation-dashboard-card{grid-column:1/-1!important}
+.dashboard-grid>.card{height:100%}
+.full-progress-card .progress-list{margin-top:4px}
+.full-progress-card .progress-list>div>div:first-child{font-size:11px}
+.full-progress-card .progress-list b{font-size:11px}
+.full-progress-card .bar{height:6px;margin-top:6px}
+.chapter-progress-card .progress-list>div>div:first-child,.schedule-card .muted,.schedule-card .schedule b,.schedule-card .schedule span{font-size:11px}
+.weekly-target-card .split-chart{align-items:center;gap:10px}
+.weekly-target-card .mini-list{gap:7px;width:100%}
+.weekly-target-card .mini-list span{font-size:11px}
+.task-highlight .dashboard-task-list .task-row{align-items:center}
+.task-highlight .dashboard-task-list .task-row span{line-height:1.35}
+@media(max-width:900px){.dashboard-grid>.consultation-dashboard-card{grid-column:1/-1!important}}
+@media(max-width:620px){.dashboard-grid>.consultation-dashboard-card{grid-column:1!important}}

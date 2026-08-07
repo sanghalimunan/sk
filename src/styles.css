@@ -330,3 +330,10 @@ body{font-size:14px;line-height:1.45}
 .gantt-month-pips i{height:3px;border-radius:50%;background:transparent}
 .gantt-month-pips i.active{width:6px;height:6px;justify-self:center;background:#c99100;box-shadow:none}
 @media(max-width:620px){.gantt-dot-track{gap:2px}.gdot{width:6px!important;height:6px!important}.gdot-slot{height:6px}.gantt-years{margin-left:88px}.gantt-month-pips{margin-left:88px}.draft-card-centered{min-height:190px}.draft-update-btn{width:100%}}
+
+
+/* v16 clickable brand */
+.brand-button{width:100%;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit;transition:transform .16s ease,background .16s ease;appearance:none}
+.brand-button:hover{background:#ffffff08;transform:translateY(-1px)}
+.brand-button:active{transform:translateY(0) scale(.99)}
+.brand-button:focus-visible{outline:2px solid #ed2965;outline-offset:3px}

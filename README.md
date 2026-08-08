@@ -1,4 +1,4 @@
-# strategiSK PhD OS v23
+# strategiSK PhD OS v24
 
 ## Safe Storage Architecture
 
@@ -23,3 +23,10 @@ After updating Google Auth Platform Data Access, press **Reconnect** once so Goo
 ## Vercel
 
 Set `VITE_GOOGLE_CLIENT_ID` in Vercel Environment Variables and redeploy.
+
+
+## v24 final personal improvements
+- Correct Hijri date formatter with Malay Hijri month names.
+- Auto-save remains local on every data change.
+- Optional automatic two-way Google Drive sync every 6 hours while the app is open and Drive is connected.
+- Calendar search remains an overlay and does not resize the existing calendar/diary layout.

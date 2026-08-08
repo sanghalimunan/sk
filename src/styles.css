@@ -488,3 +488,26 @@ body{font-size:14px;line-height:1.45}
  .reference-links>div{grid-template-columns:1fr auto!important}
  .reference-links>div input:nth-child(2){grid-column:1/-1;grid-row:2}
 }
+
+/* v22 safe cloud media */
+.storage-tree{display:grid;gap:6px;padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--soft);margin:12px 0}.storage-tree code{font-family:"Century Gothic",Arial,sans-serif;font-size:.9rem}.media-placeholder{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--soft);border:1px dashed var(--border);border-radius:12px;color:var(--muted);font-size:.78rem}.diary-photo-view .media-placeholder,.calendar-diary-image .media-placeholder{width:100%;min-height:180px}.expert-photo-upload .media-placeholder,.consultation-photo-upload .media-placeholder{width:100%;height:100%;min-height:180px}.learning-gallery .media-placeholder{width:100%;aspect-ratio:4/3;min-height:0}.storage-card{overflow:hidden}
+
+/* v23: Calendar search is an overlay and must never resize the calendar/diary layout */
+.calendar-page-wrap{position:relative}
+.calendar-page-wrap>.calendar-search{
+  position:absolute!important;
+  top:48px;
+  right:0;
+  left:auto;
+  width:min(560px,calc(100% - 12px));
+  z-index:80;
+  box-shadow:0 18px 48px rgba(0,0,0,.16);
+}
+@media(max-width:620px){
+  .calendar-page-wrap>.calendar-search{
+    top:46px;
+    left:0;
+    right:0;
+    width:100%;
+  }
+}

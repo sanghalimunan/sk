@@ -511,3 +511,8 @@ body{font-size:14px;line-height:1.45}
     width:100%;
   }
 }
+
+/* v26: profile name acts as safe reconnect + test + sync control */
+.avatar-sync{cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.avatar-sync:hover{transform:translateY(-1px)}
+.avatar-sync:disabled{cursor:wait;opacity:.72}

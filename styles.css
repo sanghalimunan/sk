@@ -526,3 +526,37 @@ body{font-size:14px;line-height:1.45}
 .auth-lock-card small{display:block;margin:14px auto 0;max-width:430px;font-size:10px;line-height:1.55;color:var(--muted)}
 .auth-signin{justify-content:center;min-width:180px}
 @media(max-width:620px){.auth-lock{padding:14px}.auth-lock-card{padding:22px 16px;border-radius:15px}.auth-lock-card h2{font-size:18px}}
+
+/* v29 visual polish: stronger dashboard accent colours + consultation typography */
+.countdown-card:not(.mid):not(.long){
+  background:linear-gradient(135deg,#e84b7d,#c90045);
+  border-color:#b9003f;
+  color:#fff;
+}
+.countdown-card:not(.mid):not(.long) span,
+.countdown-card:not(.mid):not(.long) h3,
+.countdown-card:not(.mid):not(.long) strong,
+.countdown-card:not(.mid):not(.long) p,
+.countdown-card:not(.mid):not(.long) small{color:#fff}
+.countdown-card:not(.mid):not(.long)>.countdown-icon{color:#fff;opacity:.9}
+
+.task-highlight{
+  background:linear-gradient(135deg,#f6c800,#dfa400);
+  border-color:#bd8200;
+  color:#241a00;
+  box-shadow:0 12px 30px rgba(176,123,0,.2);
+}
+.task-highlight .card-title span,.task-highlight .link-btn{color:#4f3600}
+.task-highlight .dashboard-task-list .task-row{background:rgba(255,255,255,.28)}
+
+.consultation-dashboard-card .consult-mini{font-size:14px;line-height:1.6}
+.consultation-dashboard-card .consult-mini>b{display:block;font-size:15px;line-height:1.4;margin-bottom:7px}
+.consultation-dashboard-card .consult-mini p{font-size:14px;line-height:1.6;margin:7px 0 9px}
+.consultation-dashboard-card .consult-mini small{display:block;font-size:12px;line-height:1.55}
+.consultation-dashboard-card .status-pill{font-size:9px;margin-top:10px}
+@media(max-width:620px){
+  .consultation-dashboard-card .consult-mini{font-size:13px}
+  .consultation-dashboard-card .consult-mini>b{font-size:14px}
+  .consultation-dashboard-card .consult-mini p{font-size:13px}
+  .consultation-dashboard-card .consult-mini small{font-size:11px}
+}

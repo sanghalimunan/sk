@@ -1,4 +1,4 @@
-# strategiSK PhD OS v28
+# strategiSK PhD OS v29
 
 ## Safe Storage Architecture
 
@@ -25,14 +25,14 @@ After updating Google Auth Platform Data Access, press **Reconnect** once so Goo
 Set `VITE_GOOGLE_CLIENT_ID` in Vercel Environment Variables and redeploy.
 
 
-## v28 final personal improvements
+## v29 final personal improvements
 - Correct Hijri date formatter with Malay Hijri month names.
 - Auto-save remains local on every data change.
 - Optional automatic two-way Google Drive sync every 6 hours while the app is open and Drive is connected.
 - Calendar search remains an overlay and does not resize the existing calendar/diary layout.
 
 
-## v28 smart multi-device sync
+## v29 smart multi-device sync
 - App content is locked until Google sign-in succeeds.
 - After successful sign-in, if this device has no unsynced edits, the app loads the latest Drive data first.
 - Local edits are tracked with a dirty flag. Pressing **Sync Sekarang** uploads only when this device has changed.

@@ -1,8 +1,8 @@
-# strategiSK PhD OS v33.1
+# strategiSK PhD OS v33.2
 
 Personal PhD operating system — Vercel / React + Vite.
 
-## v33.1 improvements
+## v33.2 improvements
 - Dashboard: Today's Schedule, Daily Diary, Today's Win and Diary Photo content typography enlarged to match Latest Supervisor Consultation.
 - Calendar & Diary: added Monthly Timeline view without changing the existing calendar layout.
 - Diary Labels: add/remove labels in every diary entry.
@@ -40,5 +40,5 @@ Do not commit node_modules or local .env files.
 - Multi-image upload, double-click preview, Print/PDF, and Learning Point attachments remain available.
 
 
-## v33.1 display adjustment
+## v33.2 display adjustment
 - Learning Point uploaded images: desktop 50% width, tablet 50% width, phone 100% width.

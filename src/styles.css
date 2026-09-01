@@ -632,16 +632,14 @@ body{font-size:14px;line-height:1.45}
 /* v32 — Mindmap Creator */
 
 
-/* v33.1 — Learning Point image reading layout */
-@media (min-width: 1001px){
-  .learning-gallery.learning-gallery-stack{display:block!important;width:100%!important;}
-  .learning-gallery-stack .learning-image-row{width:50%!important;max-width:760px!important;margin:0 auto 18px!important;}
+/* v33.2 — Learning Point image grid layout */
+@media (min-width: 621px){
+  .learning-gallery.learning-gallery-stack{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;align-items:start!important;width:100%!important;}
+  .learning-gallery-stack .learning-image-row{width:100%!important;max-width:none!important;margin:0!important;}
   .learning-gallery-stack .learning-full-image{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}
 }
-@media (min-width: 621px) and (max-width: 1000px){
-  .learning-gallery-stack .learning-image-row{width:50%!important;max-width:700px!important;margin:0 auto 14px!important;}
-}
 @media (max-width: 620px){
+  .learning-gallery.learning-gallery-stack{display:block!important;width:100%!important;}
   .learning-gallery-stack .learning-image-row{width:100%!important;max-width:none!important;margin:0 0 10px!important;}
   .learning-gallery-stack .learning-full-image{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}
 }

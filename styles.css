@@ -602,3 +602,34 @@ body{font-size:14px;line-height:1.45}
 @media(max-width:620px){
   .schedule-card .schedule b,.schedule-card .schedule span,.diary-snippet,.diary-snippet p,.win-card p{font-size:13px!important}.timeline-view-head{display:grid}.timeline-view-controls{justify-content:space-between}.timeline-view-controls select{min-width:0;flex:1}.monthly-diary-timeline{padding:12px 10px}.story-card p{font-size:12px}.story-image img{height:165px}.calendar-toolbar{justify-content:flex-end}.calendar-toolbar .soft-btn{padding:9px 10px;font-size:10px}.label-entry{grid-template-columns:1fr}.label-entry .secondary{justify-content:center}
 }
+
+/* ===== v31 Learning Point reading board + print controls ===== */
+.learning-title-actions,.section-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.learning-help{margin:-2px 0 10px;color:var(--muted);font-size:11px;line-height:1.5}
+.learning-gallery.learning-gallery-stack{display:block!important;width:100%!important}
+.learning-gallery-stack .learning-image-row{position:relative!important;width:100%!important;min-height:0!important;margin:0 0 16px!important;border:1px solid var(--line)!important;border-radius:12px!important;overflow:hidden!important;background:var(--surface-2)!important;cursor:zoom-in}
+.learning-gallery-stack .learning-full-image{display:block!important;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;background:#fff}
+.learning-gallery-stack .media-placeholder{width:100%!important;min-height:220px!important;aspect-ratio:auto!important}
+.learning-image-tools{position:static!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:7px 10px!important;background:var(--surface-2)!important;border-top:1px solid var(--line)!important;color:var(--muted)!important;font-size:10px!important}
+.learning-image-tools .icon-btn{position:static!important;background:transparent!important}
+.learning-gallery-stack .learning-gallery-empty{min-height:160px!important;width:100%!important}
+.learning-attachments{display:grid;gap:8px}
+.learning-attachment{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.learning-attachment>div{display:flex;align-items:center;gap:9px;min-width:0}.learning-attachment>div:first-child>svg{color:var(--pink);flex:0 0 auto}.learning-attachment span{display:grid;min-width:0}.learning-attachment b{font-size:12px;overflow-wrap:anywhere}.learning-attachment small{color:var(--muted);font-size:9px;overflow-wrap:anywhere}.learning-attachment .soft-btn{white-space:nowrap}
+.image-preview-backdrop{position:fixed;inset:0;z-index:9999;background:rgba(5,8,15,.94);display:flex;align-items:center;justify-content:center;padding:24px}
+.image-preview-inner{width:min(1500px,96vw);height:min(92vh,1100px);display:flex;align-items:center;justify-content:center;overflow:auto}
+.image-preview-full{display:block;max-width:100%;width:auto;height:auto;max-height:90vh;object-fit:contain;background:#fff;border-radius:8px}
+.image-preview-inner .media-placeholder{width:80vw;height:70vh}
+.image-preview-close{position:fixed;right:20px;top:18px;width:44px;height:44px;border:0;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;cursor:pointer;z-index:10000}
+@media(max-width:620px){
+ .learning-title-actions,.section-actions{width:100%}.learning-title-actions>*{flex:1}.section-actions>*{flex:1}
+ .learning-gallery-stack .learning-image-row{margin-bottom:10px!important;border-radius:8px!important}
+ .learning-image-tools{padding:6px 8px!important}
+ .learning-attachment{align-items:flex-start;flex-direction:column}.learning-attachment>div:last-child{width:100%;justify-content:flex-end}
+ .image-preview-backdrop{padding:8px}.image-preview-inner{width:98vw;height:94vh}.image-preview-close{right:10px;top:10px}
+}
+
+/* v32 — Mindmap Creator */
+.mindmap-page{display:grid;gap:14px;min-width:0}.mindmap-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px}.mindmap-map-select,.mindmap-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.mindmap-map-select select{min-width:220px;font-weight:700}.mindmap-workspace{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.mindmap-canvas-card{padding:14px;min-width:0}.mindmap-title-edit{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px}.mindmap-title-edit input{font-size:20px;font-weight:800;max-width:500px}.mindmap-title-edit small{color:var(--muted);text-align:right}.mindmap-scroll{width:100%;overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}.mindmap-svg{display:block;width:100%;min-width:800px;height:auto;aspect-ratio:12/7;background:#fff}.mindmap-bg{fill:#fff}.mindmap-root{cursor:pointer}.mindmap-root rect{fill:#e8edff;stroke:#2445e8;stroke-width:4}.mindmap-root text,.mindmap-node text{font-family:"Century Gothic",Arial,sans-serif;font-weight:800;font-size:15px;fill:#111827;pointer-events:none}.mindmap-node{cursor:pointer}.mindmap-node:hover rect{filter:brightness(.97)}.mindmap-node.selected rect{filter:drop-shadow(0 0 6px rgba(225,29,72,.2))}.mindmap-inspector{padding:18px;position:sticky;top:86px}.mindmap-inspector h3{margin:5px 0 16px}.mindmap-colors{display:flex;gap:8px;flex-wrap:wrap}.mindmap-colors button{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer}.mindmap-colors button.active{border-color:var(--text);box-shadow:0 0 0 2px #fff inset}.mindmap-tip{margin-top:18px;padding:12px;border-radius:13px;background:var(--soft);font-size:12px}.mindmap-tip p{margin:5px 0 0;line-height:1.55}.mindmap-delete-map{margin-top:16px}.mindmap-empty{min-height:420px;display:grid;place-items:center;text-align:center;align-content:center;gap:12px}
+@media(max-width:1050px){.mindmap-workspace{grid-template-columns:1fr}.mindmap-inspector{position:static}.mindmap-toolbar{align-items:flex-start;flex-direction:column}.mindmap-actions{width:100%}.mindmap-title-edit{align-items:flex-start;flex-direction:column}.mindmap-title-edit small{text-align:left}}
+@media(max-width:700px){.mindmap-toolbar{padding:12px}.mindmap-map-select{width:100%}.mindmap-map-select select{min-width:0;flex:1}.mindmap-actions{display:grid;grid-template-columns:1fr 1fr}.mindmap-actions button{justify-content:center}.mindmap-canvas-card{padding:9px}.mindmap-scroll{border-radius:12px}.mindmap-svg{min-width:720px}.mindmap-inspector{padding:14px}.mindmap-title-edit input{font-size:17px;width:100%}}

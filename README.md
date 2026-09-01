@@ -1,8 +1,8 @@
-# strategiSK PhD OS v30
+# strategiSK PhD OS v32
 
 Personal PhD operating system — Vercel / React + Vite.
 
-## v30 improvements
+## v32 improvements
 - Dashboard: Today's Schedule, Daily Diary, Today's Win and Diary Photo content typography enlarged to match Latest Supervisor Consultation.
 - Calendar & Diary: added Monthly Timeline view without changing the existing calendar layout.
 - Diary Labels: add/remove labels in every diary entry.
@@ -17,3 +17,18 @@ Personal PhD operating system — Vercel / React + Vite.
 4. Deploy.
 
 Do not commit node_modules or local .env files.
+
+
+## v32 Learning Point & Expert Print
+- Multi-image upload with full-width stacked reading view and double-click preview.
+- Print / Save as PDF for a complete Learning Point.
+- Upload PowerPoint, PDF and HTML reference files to `strategiSK/learning-files` on Drive sync.
+- Print / Save as PDF for the complete Expert List in a clean table.
+- Schema version 3 migration preserves existing Learning Points and adds `attachments`.
+
+
+## v32 — Mindmap Creator
+- New Mindmap Creator menu after Learning Point.
+- Add branches and child topics, edit colours/sides, save with strategiSK data, and Export PDF via browser print.
+- Responsive desktop/tablet/mobile workspace.
+- Schema v4; previous data migrates without reset.

@@ -630,6 +630,18 @@ body{font-size:14px;line-height:1.45}
 }
 
 /* v32 — Mindmap Creator */
-.mindmap-page{display:grid;gap:14px;min-width:0}.mindmap-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px}.mindmap-map-select,.mindmap-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.mindmap-map-select select{min-width:220px;font-weight:700}.mindmap-workspace{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.mindmap-canvas-card{padding:14px;min-width:0}.mindmap-title-edit{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px}.mindmap-title-edit input{font-size:20px;font-weight:800;max-width:500px}.mindmap-title-edit small{color:var(--muted);text-align:right}.mindmap-scroll{width:100%;overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}.mindmap-svg{display:block;width:100%;min-width:800px;height:auto;aspect-ratio:12/7;background:#fff}.mindmap-bg{fill:#fff}.mindmap-root{cursor:pointer}.mindmap-root rect{fill:#e8edff;stroke:#2445e8;stroke-width:4}.mindmap-root text,.mindmap-node text{font-family:"Century Gothic",Arial,sans-serif;font-weight:800;font-size:15px;fill:#111827;pointer-events:none}.mindmap-node{cursor:pointer}.mindmap-node:hover rect{filter:brightness(.97)}.mindmap-node.selected rect{filter:drop-shadow(0 0 6px rgba(225,29,72,.2))}.mindmap-inspector{padding:18px;position:sticky;top:86px}.mindmap-inspector h3{margin:5px 0 16px}.mindmap-colors{display:flex;gap:8px;flex-wrap:wrap}.mindmap-colors button{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer}.mindmap-colors button.active{border-color:var(--text);box-shadow:0 0 0 2px #fff inset}.mindmap-tip{margin-top:18px;padding:12px;border-radius:13px;background:var(--soft);font-size:12px}.mindmap-tip p{margin:5px 0 0;line-height:1.55}.mindmap-delete-map{margin-top:16px}.mindmap-empty{min-height:420px;display:grid;place-items:center;text-align:center;align-content:center;gap:12px}
-@media(max-width:1050px){.mindmap-workspace{grid-template-columns:1fr}.mindmap-inspector{position:static}.mindmap-toolbar{align-items:flex-start;flex-direction:column}.mindmap-actions{width:100%}.mindmap-title-edit{align-items:flex-start;flex-direction:column}.mindmap-title-edit small{text-align:left}}
-@media(max-width:700px){.mindmap-toolbar{padding:12px}.mindmap-map-select{width:100%}.mindmap-map-select select{min-width:0;flex:1}.mindmap-actions{display:grid;grid-template-columns:1fr 1fr}.mindmap-actions button{justify-content:center}.mindmap-canvas-card{padding:9px}.mindmap-scroll{border-radius:12px}.mindmap-svg{min-width:720px}.mindmap-inspector{padding:14px}.mindmap-title-edit input{font-size:17px;width:100%}}
+
+
+/* v33.1 — Learning Point image reading layout */
+@media (min-width: 1001px){
+  .learning-gallery.learning-gallery-stack{display:block!important;width:100%!important;}
+  .learning-gallery-stack .learning-image-row{width:50%!important;max-width:760px!important;margin:0 auto 18px!important;}
+  .learning-gallery-stack .learning-full-image{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}
+}
+@media (min-width: 621px) and (max-width: 1000px){
+  .learning-gallery-stack .learning-image-row{width:50%!important;max-width:700px!important;margin:0 auto 14px!important;}
+}
+@media (max-width: 620px){
+  .learning-gallery-stack .learning-image-row{width:100%!important;max-width:none!important;margin:0 0 10px!important;}
+  .learning-gallery-stack .learning-full-image{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}
+}

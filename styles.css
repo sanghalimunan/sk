@@ -698,27 +698,35 @@ body{font-size:14px;line-height:1.45}
 
 /* v33.7 — grouped monthly timeline */
 .day-group-timeline{padding-top:18px!important}
-.timeline-day-group{display:grid;grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr);position:relative;align-items:start;margin:8px 0 30px;min-height:120px}
-.timeline-day-group .story-dot{grid-column:2;grid-row:1;justify-self:center;margin-top:27px;z-index:3}
-.timeline-day-group .timeline-date-center{grid-column:2;grid-row:1;justify-self:center;align-self:start;z-index:4;min-width:88px;padding:9px 0;display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:6px;align-items:end;text-align:center;background:var(--bg)}
+.timeline-day-group{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);position:relative;align-items:start;margin:8px 0 30px;min-height:120px}
+.timeline-day-group .story-dot{grid-column:2;grid-row:1;justify-self:center;margin-top:29px;z-index:3}
+.timeline-day-group .timeline-date-center{grid-row:1;z-index:4;min-width:118px;padding:8px 10px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:end;background:transparent}
 .timeline-date-center strong{grid-column:1;grid-row:1/3;font-size:32px!important;line-height:.9}
 .timeline-date-center span{grid-column:2;grid-row:1;font-size:15px!important;line-height:1;color:var(--pink);font-weight:900;margin:0!important;align-self:end}
 .timeline-date-center small{grid-column:2;grid-row:2;font-size:12px!important;line-height:1;color:var(--muted);font-weight:800;margin:3px 0 0!important;white-space:nowrap}
-.timeline-day-group .timeline-day-content{display:grid;gap:10px;width:min(100%,760px)}
-.timeline-day-group.left .timeline-day-content{grid-column:1;grid-row:1;justify-self:end;padding-right:8px}
-.timeline-day-group.right .timeline-day-content{grid-column:3;grid-row:1;justify-self:start;padding-left:8px}
+/* Date sits opposite the content and remains close to the centre axis */
+.timeline-day-group.left .timeline-date-center{grid-column:3;justify-self:start;text-align:left;margin-left:12px}
+.timeline-day-group.right .timeline-date-center{grid-column:1;justify-self:end;text-align:right;margin-right:12px}
+.timeline-day-group .timeline-day-content{display:grid;gap:10px;width:min(100%,560px)}
+.timeline-day-group.left .timeline-day-content{grid-column:1;grid-row:1;justify-self:end;padding-right:12px}
+.timeline-day-group.right .timeline-day-content{grid-column:3;grid-row:1;justify-self:start;padding-left:12px}
 .timeline-day-group .timeline-diaries{display:grid;gap:10px}
-.timeline-day-group .story-card{width:100%!important;max-width:none!important;margin:0!important;justify-self:stretch!important}
-.timeline-day-group .activity-timeline-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;grid-column:auto!important;grid-row:auto!important;justify-self:stretch!important;margin:0!important}
+.timeline-day-group .story-card{width:min(100%,520px)!important;max-width:520px!important;margin:0!important}
+.timeline-day-group.left .story-card{justify-self:end!important}
+.timeline-day-group.right .story-card{justify-self:start!important}
+.timeline-day-group .activity-timeline-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:min(100%,430px)!important;grid-column:auto!important;grid-row:auto!important;margin:0!important}
+.timeline-day-group.left .activity-timeline-grid{justify-self:end!important}
+.timeline-day-group.right .activity-timeline-grid{justify-self:start!important}
 @media(max-width:900px){
  .timeline-day-group{grid-template-columns:76px minmax(0,1fr);gap:8px;margin-bottom:22px}
  .timeline-day-group.left .timeline-day-content,.timeline-day-group.right .timeline-day-content{grid-column:2;grid-row:1;justify-self:stretch;padding:0;width:100%}
- .timeline-day-group .timeline-date-center{grid-column:1;grid-row:1;justify-self:start;min-width:70px;background:transparent;grid-template-columns:1fr;grid-template-rows:auto auto auto;padding:2px 4px;text-align:left}
+ .timeline-day-group .timeline-date-center,.timeline-day-group.left .timeline-date-center,.timeline-day-group.right .timeline-date-center{grid-column:1;grid-row:1;justify-self:start;min-width:70px;background:transparent;grid-template-columns:1fr;grid-template-rows:auto auto auto;padding:2px 4px;text-align:left;margin:0}
  .timeline-date-center strong{grid-column:1;grid-row:1;font-size:28px!important}
  .timeline-date-center span{grid-column:1;grid-row:2;font-size:12px!important;margin-top:4px!important}
  .timeline-date-center small{grid-column:1;grid-row:3;font-size:9px!important;margin-top:3px!important}
  .timeline-day-group .story-dot{grid-column:1;grid-row:1;justify-self:end;margin:26px -5px 0 0}
  .day-group-timeline:before{left:76px!important}
- .timeline-day-group .activity-timeline-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .timeline-day-group .story-card{width:100%!important;max-width:none!important;justify-self:stretch!important}
+ .timeline-day-group .activity-timeline-grid{width:100%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;justify-self:stretch!important}
 }
 @media(max-width:520px){.timeline-day-group .activity-timeline-grid{grid-template-columns:1fr!important}}

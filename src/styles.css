@@ -739,7 +739,7 @@ body{font-size:14px;line-height:1.45}
   .timeline-day-group.right .timeline-day-content .activity-timeline-grid .compact-activity-card{justify-self:start!important;}
 }
 
-/* v34.0 — activity ranking follows distance from timeline axis */
+/* v34.1 — activity cards uniform size */
 @media (min-width: 861px){
   .timeline-day-group.left .activity-timeline-grid{direction:rtl!important;}
   .timeline-day-group.left .activity-timeline-grid .compact-activity-card{direction:ltr!important;}

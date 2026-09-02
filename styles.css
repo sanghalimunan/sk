@@ -705,8 +705,8 @@ body{font-size:14px;line-height:1.45}
 .timeline-date-center span{grid-column:2;grid-row:1;font-size:15px!important;line-height:1;color:var(--pink);font-weight:900;margin:0!important;align-self:end}
 .timeline-date-center small{grid-column:2;grid-row:2;font-size:12px!important;line-height:1;color:var(--muted);font-weight:800;margin:3px 0 0!important;white-space:nowrap}
 /* Date sits opposite the content and remains close to the centre axis */
-.timeline-day-group.left .timeline-date-center{grid-column:3;justify-self:start;text-align:left;margin-left:12px}
-.timeline-day-group.right .timeline-date-center{grid-column:1;justify-self:end;text-align:right;margin-right:12px}
+.timeline-day-group.left .timeline-date-center{grid-column:3;justify-self:start;text-align:right;align-items:end;margin-left:10px}
+.timeline-day-group.right .timeline-date-center{grid-column:1;justify-self:end;text-align:left;align-items:start;margin-right:10px}
 .timeline-day-group .timeline-day-content{display:grid;gap:10px;width:min(100%,560px)}
 .timeline-day-group.left .timeline-day-content{grid-column:1;grid-row:1;justify-self:end;padding-right:12px}
 .timeline-day-group.right .timeline-day-content{grid-column:3;grid-row:1;justify-self:start;padding-left:12px}
@@ -714,9 +714,9 @@ body{font-size:14px;line-height:1.45}
 .timeline-day-group .story-card{width:min(100%,520px)!important;max-width:520px!important;margin:0!important}
 .timeline-day-group.left .story-card{justify-self:end!important}
 .timeline-day-group.right .story-card{justify-self:start!important}
-.timeline-day-group .activity-timeline-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:min(100%,430px)!important;grid-column:auto!important;grid-row:auto!important;margin:0!important}
-.timeline-day-group.left .activity-timeline-grid{justify-self:end!important}
-.timeline-day-group.right .activity-timeline-grid{justify-self:start!important}
+.timeline-day-group .activity-timeline-grid{display:grid!important;grid-template-columns:repeat(3,minmax(118px,118px))!important;gap:8px!important;width:fit-content!important;max-width:100%!important;grid-column:auto!important;grid-row:auto!important;margin:0!important}
+.timeline-day-group.left .activity-timeline-grid{justify-self:end!important;margin-left:auto!important;margin-right:0!important;justify-content:end!important}
+.timeline-day-group.right .activity-timeline-grid{justify-self:start!important;margin-right:auto!important;margin-left:0!important;justify-content:start!important}
 @media(max-width:900px){
  .timeline-day-group{grid-template-columns:76px minmax(0,1fr);gap:8px;margin-bottom:22px}
  .timeline-day-group.left .timeline-day-content,.timeline-day-group.right .timeline-day-content{grid-column:2;grid-row:1;justify-self:stretch;padding:0;width:100%}
@@ -730,3 +730,11 @@ body{font-size:14px;line-height:1.45}
  .timeline-day-group .activity-timeline-grid{width:100%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;justify-self:stretch!important}
 }
 @media(max-width:520px){.timeline-day-group .activity-timeline-grid{grid-template-columns:1fr!important}}
+
+/* v33.9 — monthly timeline axis-aligned activity hugging center */
+@media (min-width: 861px){
+  .timeline-day-group.left .timeline-day-content .activity-timeline-grid{margin-left:auto!important;margin-right:0!important;}
+  .timeline-day-group.right .timeline-day-content .activity-timeline-grid{margin-right:auto!important;margin-left:0!important;}
+  .timeline-day-group.left .timeline-day-content .activity-timeline-grid .compact-activity-card{justify-self:end!important;}
+  .timeline-day-group.right .timeline-day-content .activity-timeline-grid .compact-activity-card{justify-self:start!important;}
+}

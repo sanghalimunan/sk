@@ -643,3 +643,9 @@ body{font-size:14px;line-height:1.45}
   .learning-gallery-stack .learning-image-row{width:100%!important;max-width:none!important;margin:0 0 10px!important;}
   .learning-gallery-stack .learning-full-image{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}
 }
+
+/* v33.5 — unified Calendar Activity tasks + multi-story diary */
+.calendar-event-check{display:flex;align-items:center;gap:9px;min-width:0;flex:1}.calendar-event-check input{width:17px;height:17px;accent-color:var(--pink);flex:0 0 auto}.calendar-event-check>div{display:grid;gap:2px}.calendar-event-check .done{text-decoration:line-through;opacity:.6}
+.calendar-diary-list{display:grid;gap:14px;margin-top:12px}.calendar-diary-list .calendar-diary-detail{margin-top:0}
+.activity-story-card{background:#b80f2e!important;border-color:#8e0b24!important;color:#fff!important;box-shadow:0 12px 28px rgba(153,0,35,.18)}.activity-story-card h3{margin:7px 0 4px;font-size:17px;color:#fff}.activity-story-card p,.activity-story-card b{color:#fff}.activity-story-card .link-btn{color:#fff!important}.activity-badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#fff;color:#9f0b28;font-size:9px;font-weight:900;letter-spacing:.12em}.activity-node .story-dot{background:#b80f2e!important;box-shadow:0 0 0 5px rgba(184,15,46,.15)!important}
+@media(max-width:620px){.calendar-diary-list{gap:10px}.activity-story-card h3{font-size:15px}}

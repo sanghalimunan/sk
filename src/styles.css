@@ -745,3 +745,45 @@ body{font-size:14px;line-height:1.45}
   .timeline-day-group.left .activity-timeline-grid .compact-activity-card{direction:ltr!important;}
   .timeline-day-group.right .activity-timeline-grid{direction:ltr!important;}
 }
+
+/* v34.2 — force identical Monthly Timeline activity card dimensions */
+@media (min-width: 901px){
+  .timeline-day-group .activity-timeline-grid{
+    grid-auto-columns:118px!important;
+    grid-template-columns:repeat(3,118px)!important;
+    align-items:stretch!important;
+  }
+  .timeline-day-group .activity-story-card.compact-activity-card{
+    box-sizing:border-box!important;
+    width:118px!important;
+    min-width:118px!important;
+    max-width:118px!important;
+    height:112px!important;
+    min-height:112px!important;
+    max-height:112px!important;
+    padding:10px 11px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    overflow:hidden!important;
+  }
+  .timeline-day-group .compact-activity-card h3{
+    width:100%!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    overflow:hidden!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow-wrap:anywhere!important;
+  }
+  .timeline-day-group .compact-activity-card p{
+    width:100%!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .timeline-day-group .compact-activity-card .link-btn{
+    margin-top:auto!important;
+  }
+}

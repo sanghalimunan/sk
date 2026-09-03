@@ -838,3 +838,36 @@ body{font-size:14px;line-height:1.45}
   .timeline-date-center strong{font-size:27px!important}
   .timeline-date-center small{font-size:9px!important}
 }
+
+
+/* v34.5 — timeline date stacking and right-side desktop arrangement */
+.timeline-day-group.left .timeline-date-center{display:grid!important;grid-template-columns:auto 1fr!important;grid-template-rows:auto auto!important;column-gap:7px!important;align-items:center!important;text-align:left!important}
+.timeline-day-group.left .timeline-date-center strong{grid-column:1!important;grid-row:1 / span 2!important}
+.timeline-day-group.left .timeline-date-center span{grid-column:2!important;grid-row:1!important;align-self:end!important}
+.timeline-day-group.left .timeline-date-center small{grid-column:2!important;grid-row:2!important;align-self:start!important}
+
+.timeline-day-group.right .timeline-date-center{display:grid!important;grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;column-gap:8px!important;align-items:center!important;text-align:right!important}
+.timeline-day-group.right .timeline-date-center strong{grid-column:2!important;grid-row:1 / span 2!important;justify-self:end!important}
+.timeline-day-group.right .timeline-date-center span{grid-column:1!important;grid-row:1!important;justify-self:end!important;align-self:end!important;text-align:right!important}
+.timeline-day-group.right .timeline-date-center small{grid-column:1!important;grid-row:2!important;justify-self:end!important;align-self:start!important;text-align:right!important}
+
+@media (max-width:900px){
+  .timeline-day-group .timeline-date-center,
+  .timeline-day-group.left .timeline-date-center,
+  .timeline-day-group.right .timeline-date-center{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    text-align:left!important;
+    gap:2px!important;
+  }
+  .timeline-day-group .timeline-date-center strong,
+  .timeline-day-group.left .timeline-date-center strong,
+  .timeline-day-group.right .timeline-date-center strong{order:1!important;align-self:flex-start!important;justify-self:auto!important}
+  .timeline-day-group .timeline-date-center span,
+  .timeline-day-group.left .timeline-date-center span,
+  .timeline-day-group.right .timeline-date-center span{order:2!important;display:block!important;width:100%!important;margin:2px 0 0!important;text-align:left!important;justify-self:auto!important}
+  .timeline-day-group .timeline-date-center small,
+  .timeline-day-group.left .timeline-date-center small,
+  .timeline-day-group.right .timeline-date-center small{order:3!important;display:block!important;width:100%!important;margin:0!important;text-align:left!important;justify-self:auto!important}
+}

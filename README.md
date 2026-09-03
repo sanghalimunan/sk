@@ -1,6 +1,6 @@
-# strategiSK PhD OS v34.4
+# strategiSK PhD OS v34.5
 
-## v34.4 fix
+## v34.5 fix
 - Restored the Draft 111 Tracker page that was accidentally omitted in v33.2.
 - Draft history, edit, delete and progress display are available again.
 - Keeps the v33.2 Learning Point 2-column visual grid and sketch-to-visual-reference behavior.
@@ -8,7 +8,7 @@
 
 Personal PhD operating system — Vercel / React + Vite.
 
-## v34.4 improvements
+## v34.5 improvements
 - Dashboard: Today's Schedule, Daily Diary, Today's Win and Diary Photo content typography enlarged to match Latest Supervisor Consultation.
 - Calendar & Diary: added Monthly Timeline view without changing the existing calendar layout.
 - Diary Labels: add/remove labels in every diary entry.
@@ -46,17 +46,17 @@ Do not commit node_modules or local .env files.
 - Multi-image upload, double-click preview, Print/PDF, and Learning Point attachments remain available.
 
 
-## v34.4 display adjustment
+## v34.5 display adjustment
 - Learning Point uploaded images: desktop 50% width, tablet 50% width, phone 100% width.
 
 
-## v34.4 performance
+## v34.5 performance
 - Uploaded media no longer keeps embedded base64 data in local state after successful Drive upload.
 - Smart Sync only creates a cloud safety snapshot when the cloud changed since the device baseline.
 - Text-only sync after initial media upload is substantially lighter.
 
 
-## v34.4 major update
+## v34.5 major update
 - Click diary labels to open an all-years filtered timeline.
 - Print / PDF for Calendar & Diary, SV Consultation and Draft 111 history.
 - Supervisor Consultation menu shortened to SV Consultation.

@@ -787,3 +787,17 @@ body{font-size:14px;line-height:1.45}
     margin-top:auto!important;
   }
 }
+
+
+/* v34.3 — label explorer, print, A4 sketch, rich notes */
+.diary-labels button{border:0;background:#fff0f5;color:var(--pink);border-radius:999px;padding:5px 9px;font-size:9px;font-weight:800;cursor:pointer}.diary-labels button:hover{background:var(--pink);color:#fff}
+.timeline-view-controls button:disabled{opacity:.28;cursor:not-allowed}
+.hijri-card{position:static!important;margin:16px 0 0 auto!important;width:max-content!important;max-width:min(100%,210px)!important;text-align:right!important}
+.day-panel{padding-bottom:16px!important}
+.pen-board canvas{aspect-ratio:1.414/1!important;max-width:1180px;margin:0 auto;background:#fff;outline:none}
+.rich-notes-editor{border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:14px;overflow:auto;min-height:360px;white-space:normal!important}
+.rich-notes-editor:empty:before{content:attr(data-placeholder);color:var(--muted)}
+.rich-notes-editor table,.rich-print table{width:100%;border-collapse:collapse;margin:10px 0}.rich-notes-editor th,.rich-notes-editor td,.rich-print th,.rich-print td{border:1px solid var(--line);padding:7px;vertical-align:top}.rich-notes-editor th{background:var(--soft)}
+.rich-notes-editor img{max-width:100%;height:auto}.rich-notes-editor ul,.rich-notes-editor ol{padding-left:24px}
+.table-card .responsive-table table{font-size:13px!important}.table-card .responsive-table th{font-size:10px!important}.table-card .responsive-table td{padding-top:16px!important;padding-bottom:16px!important;line-height:1.45!important}.draft-history-head{margin-bottom:8px}
+@media(max-width:620px){.rich-notes-editor{min-height:260px;font-size:14px}.pen-board canvas{width:100%;max-width:none}.hijri-card{margin-top:12px!important}}

@@ -801,3 +801,40 @@ body{font-size:14px;line-height:1.45}
 .rich-notes-editor img{max-width:100%;height:auto}.rich-notes-editor ul,.rich-notes-editor ol{padding-left:24px}
 .table-card .responsive-table table{font-size:13px!important}.table-card .responsive-table th{font-size:10px!important}.table-card .responsive-table td{padding-top:16px!important;padding-bottom:16px!important;line-height:1.45!important}.draft-history-head{margin-bottom:8px}
 @media(max-width:620px){.rich-notes-editor{min-height:260px;font-size:14px}.pen-board canvas{width:100%;max-width:none}.hijri-card{margin-top:12px!important}}
+
+
+/* v34.4 — clearer responsive header + timeline date context */
+.welcome h1 .welcome-name{display:block;color:var(--pink);white-space:nowrap;overflow:visible;text-overflow:clip;margin-top:1px}
+@media (min-width:901px){
+  .welcome h1 .welcome-name{font-size:.98em}
+}
+@media (max-width:1100px){
+  .topbar{min-height:78px;height:auto!important}
+  .welcome h1{font-size:18px!important;line-height:1.12!important;margin-bottom:4px!important}
+  .welcome h1 .welcome-name{font-size:18px!important;line-height:1.12!important}
+}
+@media (max-width:900px){
+  .timeline-day-group .timeline-date-center,
+  .timeline-day-group.left .timeline-date-center,
+  .timeline-day-group.right .timeline-date-center{
+    min-width:76px!important;
+    width:76px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:2px!important;
+    padding:2px 5px!important;
+  }
+  .timeline-date-center strong{display:block!important;font-size:28px!important;line-height:1!important}
+  .timeline-date-center span{display:block!important;font-size:10px!important;line-height:1.05!important;margin:2px 0 0!important}
+  .timeline-date-center small{display:block!important;font-size:9px!important;line-height:1.1!important;margin:2px 0 0!important;white-space:nowrap!important;color:var(--muted)!important}
+}
+@media (max-width:520px){
+  .welcome h1{font-size:17px!important}
+  .welcome h1 .welcome-name{font-size:17px!important}
+  .timeline-day-group .timeline-date-center,
+  .timeline-day-group.left .timeline-date-center,
+  .timeline-day-group.right .timeline-date-center{min-width:72px!important;width:72px!important}
+  .timeline-date-center strong{font-size:27px!important}
+  .timeline-date-center small{font-size:9px!important}
+}

@@ -1,4 +1,12 @@
-# strategiSK PhD OS v34.7
+# strategiSK PhD OS v34.8
+
+## v34.8 — Draft 111 mobile readability
+- Mobile Draft 111 history now uses one full-width card per draft, inspired by the Expert List layout.
+- No horizontal scrolling on phone.
+- Each card clearly separates Draft, Date, Pages, Focus, Notes, Thesis File, Edit and Delete actions.
+- Desktop Draft 111 history keeps the existing table layout.
+- Based on v34.7; all existing storage, Learning Point folders and Drive features are preserved.
+
 
 ## v34.7 fix
 - Restored the Draft 111 Tracker page that was accidentally omitted in v33.2.

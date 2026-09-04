@@ -908,3 +908,14 @@ body{font-size:14px;line-height:1.45}
 @media(max-width:1100px){.learning-folder-list,.learning-index-list{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:760px){.learning-folder-list,.learning-index-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}.learning-index-actions{flex-wrap:wrap!important}}
 @media(max-width:520px){.learning-folder-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}.learning-index-list{display:grid!important;grid-template-columns:1fr!important;overflow:visible!important}.learning-index-list>button{min-width:0!important;flex:auto!important}.learning-folder-list>button span,.learning-folder-row>button:first-child span{font-size:12px!important}}
+
+
+/* v34.8 Learning Point folder/file visual refinement */
+.empty-learning .button-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.folder-tile,.learning-folder-row.folder-tile{background:linear-gradient(180deg,rgba(110,14,48,.38),rgba(72,10,32,.22))!important;border-color:rgba(255,74,131,.38)!important}
+.folder-tile:hover,.learning-folder-row.folder-tile:hover{border-color:rgba(255,74,131,.62)!important;box-shadow:0 0 0 1px rgba(255,74,131,.16) inset}
+.folder-tile.active,.learning-folder-row.folder-tile.active{background:linear-gradient(180deg,rgba(132,16,58,.55),rgba(86,12,38,.32))!important;border-color:#ff4c8a!important;box-shadow:inset 3px 0 0 var(--pink)!important}
+.learning-folder-list>button.folder-tile,.learning-folder-row.folder-tile>button:first-child{background:transparent!important}
+.learning-index-list>button{background:var(--surface-2)!important}
+.learning-index-actions .primary{min-width:98px}
+@media(max-width:620px){.empty-learning{padding:34px 18px}.empty-learning .button-row{display:grid;grid-template-columns:1fr;justify-content:stretch;width:100%}.empty-learning .button-row button{width:100%}}

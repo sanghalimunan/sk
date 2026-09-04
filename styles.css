@@ -871,3 +871,19 @@ body{font-size:14px;line-height:1.45}
   .timeline-day-group.left .timeline-date-center small,
   .timeline-day-group.right .timeline-date-center small{order:3!important;display:block!important;width:100%!important;margin:0!important;text-align:left!important;justify-self:auto!important}
 }
+
+
+/* v34.6 — header, SV actions, Learning folders, thesis preview */
+.welcome h1 .welcome-name{display:inline!important;white-space:nowrap!important;margin:0!important}
+.consultation-page>.section-title>.button-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;flex-wrap:nowrap!important}
+.consultation-page>.section-title>.button-row>button{width:100%!important;justify-content:center!important;min-width:130px!important}
+.learning-index-actions{display:flex;gap:6px;align-items:center}.learning-index-actions button{padding:8px 10px!important}
+.learning-folder-list{display:grid;gap:5px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+.learning-folder-list>button,.learning-folder-row>button:first-child{border:0;background:transparent;color:var(--ink);display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;text-align:left;padding:8px 9px;border-radius:8px;font-size:10px;width:100%}
+.learning-folder-list button.active{background:var(--soft);box-shadow:inset 3px 0 0 var(--pink)}.learning-folder-list svg{color:var(--pink)}.learning-folder-list b{font-size:9px;color:var(--muted)}
+.learning-folder-row{display:grid;grid-template-columns:1fr 28px;gap:3px;align-items:center}.folder-delete{border:0;background:transparent;color:var(--muted);width:28px;height:28px;border-radius:7px;display:grid;place-items:center}.folder-delete:hover{background:#ffeded;color:#c43143}
+.learning-title-fields{grid-template-columns:minmax(250px,1fr) 150px 180px!important}
+.draft-file-actions{display:grid;gap:5px;justify-items:start}.draft-file-actions small{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.doc-preview-backdrop{position:fixed;inset:0;z-index:9999;background:#05070bb8;display:grid;place-items:center;padding:18px}.doc-preview-modal{width:min(1200px,96vw);height:min(92vh,1000px);background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 30px 90px #0009}.doc-preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}.doc-preview-head>div:first-child{display:grid}.doc-preview-head small{color:var(--muted);font-size:9px}.doc-preview-head a{text-decoration:none}.doc-preview-modal iframe{width:100%;height:100%;border:0;background:#fff}
+@media(max-width:760px){.learning-title-fields{grid-template-columns:1fr!important}.consultation-page>.section-title>.button-row{grid-template-columns:1fr 1fr!important;width:100%!important}.consultation-page>.section-title{display:grid!important}.draft-file-actions small{max-width:150px}}
+@media(max-width:460px){.welcome h1 .welcome-name{display:block!important}.consultation-page>.section-title>.button-row>button{min-width:0!important;padding:10px 8px!important}.doc-preview-backdrop{padding:4px}.doc-preview-modal{width:99vw;height:94vh}}

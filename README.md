@@ -1,14 +1,14 @@
-# strategiSK PhD OS v34.8
+# strategiSK PhD OS v34.9
 
-## v34.8 — Draft 111 mobile readability
+## v34.9 — Draft 111 mobile readability
 - Mobile Draft 111 history now uses one full-width card per draft, inspired by the Expert List layout.
 - No horizontal scrolling on phone.
 - Each card clearly separates Draft, Date, Pages, Focus, Notes, Thesis File, Edit and Delete actions.
 - Desktop Draft 111 history keeps the existing table layout.
-- Based on v34.7; all existing storage, Learning Point folders and Drive features are preserved.
+- Based on v34.9; all existing storage, Learning Point folders and Drive features are preserved.
 
 
-## v34.7 fix
+## v34.9 fix
 - Restored the Draft 111 Tracker page that was accidentally omitted in v33.2.
 - Draft history, edit, delete and progress display are available again.
 - Keeps the v33.2 Learning Point 2-column visual grid and sketch-to-visual-reference behavior.
@@ -16,7 +16,7 @@
 
 Personal PhD operating system — Vercel / React + Vite.
 
-## v34.7 improvements
+## v34.9 improvements
 - Dashboard: Today's Schedule, Daily Diary, Today's Win and Diary Photo content typography enlarged to match Latest Supervisor Consultation.
 - Calendar & Diary: added Monthly Timeline view without changing the existing calendar layout.
 - Diary Labels: add/remove labels in every diary entry.
@@ -54,17 +54,17 @@ Do not commit node_modules or local .env files.
 - Multi-image upload, double-click preview, Print/PDF, and Learning Point attachments remain available.
 
 
-## v34.7 display adjustment
+## v34.9 display adjustment
 - Learning Point uploaded images: desktop 50% width, tablet 50% width, phone 100% width.
 
 
-## v34.7 performance
+## v34.9 performance
 - Uploaded media no longer keeps embedded base64 data in local state after successful Drive upload.
 - Smart Sync only creates a cloud safety snapshot when the cloud changed since the device baseline.
 - Text-only sync after initial media upload is substantially lighter.
 
 
-## v34.7 major update
+## v34.9 major update
 - Click diary labels to open an all-years filtered timeline.
 - Print / PDF for Calendar & Diary, SV Consultation and Draft 111 history.
 - Supervisor Consultation menu shortened to SV Consultation.
@@ -72,3 +72,12 @@ Do not commit node_modules or local .env files.
 - A4 landscape sketch canvas supports image upload/paste before annotation.
 - Hijri date moved below diary content to avoid overlap.
 - Draft history typography enlarged.
+
+
+## v34.9 update
+- SV Consultation supports multiple image upload. One image is shown at a time with arrows, dots and touch swipe; consultation image frame is 4:3 and cropped to frame.
+- Calendar & Diary supports multiple images per diary story. One image is shown at a time with swipe/arrows.
+- Diary and Monthly Timeline image viewers use `object-fit: contain`, so portrait and landscape images are shown fully without cropping.
+- Diary label input splits comma-separated text into separate labels (e.g. `thesis, progress, hlp`).
+- Existing single-image diary/SV records are migrated automatically to the multi-image structure. Schema version 6.
+- Expert List image frame is 4:3 while keeping fixed-frame cover behaviour.

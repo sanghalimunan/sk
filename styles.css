@@ -944,3 +944,42 @@ body{font-size:14px;line-height:1.45}
   .draft-mobile-actions{padding:11px 13px 13px!important}
   .draft-mobile-head strong{font-size:23px!important}
 }
+
+/* strategiSK v34.9 — multi-image diary/SV + full-image diary timeline */
+.media-slider{position:relative;width:100%;min-width:0;overflow:hidden;border-radius:12px;background:var(--soft)}
+.media-slider-stage{width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media-slider-stage img{display:block;width:100%;height:100%}
+.media-slider-contain .media-slider-stage{min-height:220px;max-height:560px;background:#1110}
+.media-slider-contain .media-slider-stage img{width:100%;height:auto;max-height:560px;object-fit:contain!important}
+.media-slider-cover43{aspect-ratio:4/3}
+.media-slider-cover43 .media-slider-stage{width:100%;height:100%}
+.media-slider-cover43 .media-slider-stage img{width:100%;height:100%;object-fit:cover!important}
+.media-slide-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:50%;display:grid;place-items:center;background:#111b;color:#fff;z-index:3;box-shadow:0 3px 12px #0003}
+.media-slide-btn.prev{left:8px}.media-slide-btn.next{right:8px}
+.media-slide-count{position:absolute;right:10px;top:10px;background:#111b;color:#fff;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;z-index:3}
+.media-slide-dots{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);display:flex;gap:5px;z-index:3;padding:4px 7px;border-radius:999px;background:#1118}
+.media-slide-dots button{width:7px;height:7px;border-radius:50%;border:0;padding:0;background:#fff7}.media-slide-dots button.active{background:#fff}
+.media-slide-remove{position:absolute;left:10px;top:10px;border:0;border-radius:8px;background:#fffdf0;color:#b71f43;padding:6px 8px;font-size:10px;font-weight:800;display:flex;gap:5px;align-items:center;z-index:4}
+.diary-upload.multi-upload{min-height:78px;margin-bottom:10px}
+.calendar-diary-image{background:var(--soft);overflow:hidden}
+.calendar-diary-image .media-slider-contain .media-slider-stage,.story-image .media-slider-contain .media-slider-stage{min-height:180px;max-height:620px}
+.calendar-diary-image .media-slider-contain img,.story-image .media-slider-contain img{width:100%!important;height:auto!important;max-height:620px!important;object-fit:contain!important}
+.story-image{background:var(--soft);border-radius:12px;overflow:hidden}
+/* Dashboard diary photo also preserves portrait/landscape without crop */
+.diary-photo-view{background:var(--soft);border-radius:10px;overflow:hidden}
+.diary-photo-view img{width:100%!important;height:auto!important;max-height:420px!important;object-fit:contain!important}
+.consultation-photo-box{display:grid;gap:8px;align-content:start;min-width:0}
+.consultation-photo-box .media-slider{width:100%}
+.consultation-photo-upload{aspect-ratio:4/3;min-height:0!important;width:100%}
+.consultation-photo-upload.empty{min-height:190px!important}
+.consultation-photo-upload.compact-add{aspect-ratio:auto;min-height:54px!important;flex-direction:row}
+.consultation-photo-upload img{aspect-ratio:4/3;height:auto!important;min-height:0!important;object-fit:cover}
+.expert-photo-upload{aspect-ratio:4/3;min-height:0!important}
+.expert-photo-upload img{width:100%;height:100%!important;min-height:0!important;object-fit:cover}
+@media(max-width:620px){
+  .media-slider-contain .media-slider-stage{min-height:160px;max-height:520px}
+  .media-slider-contain .media-slider-stage img,.calendar-diary-image .media-slider-contain img,.story-image .media-slider-contain img{max-height:520px!important}
+  .media-slide-btn{width:34px;height:34px}.media-slide-btn.prev{left:6px}.media-slide-btn.next{right:6px}
+  .consultation-photo-upload.empty{min-height:0!important}
+  .expert-photo-upload{min-height:0!important}
+}

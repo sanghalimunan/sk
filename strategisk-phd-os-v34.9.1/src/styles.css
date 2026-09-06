@@ -999,35 +999,3 @@ body{font-size:14px;line-height:1.45}
 @media(max-width:620px){
   .calendar-diary-image .media-slider-contain img,.story-image .media-slider-contain img{width:100%!important;max-width:100%!important;height:auto!important;max-height:62vh!important;object-fit:contain!important}
 }
-
-
-/* v35.0 expert smart face crop */
-.expert-photo-upload small{font-size:10px;opacity:.8}
-.expert-photo-upload img.expert-smart-photo{width:100%;height:100%;min-height:150px;object-fit:cover;object-position:50% 24%;transition:object-position .25s ease}
-@media(max-width:620px){
-  .expert-photo-upload img.expert-smart-photo{height:220px;min-height:0;object-position:50% 22%}
-}
-@media(min-width:621px){
-  .expert-photo-upload img.expert-smart-photo{height:auto!important;max-height:340px!important;min-height:0!important;object-fit:cover!important}
-}
-
-
-/* v35.0 expert smart crop */
-.expert-card-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.small-btn{padding:8px 12px;font-size:12px}
-.expert-photo-smart{aspect-ratio:4/3;min-height:0!important;overflow:hidden;position:relative}
-.expert-photo-smart img{width:100%!important;height:100%!important;min-height:0!important;object-fit:cover!important;object-position:50% 24%;transition:transform .18s ease, object-position .18s ease;background:var(--surface-2)!important}
-.expert-crop-tools{margin:12px 0 2px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--soft);display:grid;gap:10px}
-.crop-tool-row{display:grid;grid-template-columns:140px 1fr 58px;gap:12px;align-items:center}
-.crop-tool-row span{font-size:12px;color:var(--muted)}
-.crop-tool-row b{font-size:12px;text-align:right}
-.crop-hint{font-size:11px;color:var(--muted)}
-@media(min-width:621px){
-  .expert-photo-smart{max-width:380px}
-}
-@media(max-width:620px){
-  .expert-card-head-actions{justify-content:space-between}
-  .crop-tool-row{grid-template-columns:1fr;gap:6px}
-  .crop-tool-row b{text-align:left}
-  .expert-photo-smart img{object-position:50% 22%}
-}

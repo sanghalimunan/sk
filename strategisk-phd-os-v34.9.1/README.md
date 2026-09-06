@@ -1,5 +1,3 @@
-strategiSK v35.0
-
 strategiSK v34.9.1
 
 # strategiSK PhD OS v34.9

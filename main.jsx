@@ -5,21 +5,28 @@ import {
   Cloud, CloudDownload, CloudUpload, Copy, Database, Edit3, FileImage, FileText, Flag,
   Gauge, GraduationCap, Home, ImagePlus, LineChart, ListChecks, Menu, MessageCircle, Moon,
   Plus, Rocket, Save, Send, Settings, Sparkles, Sun, Target, Trash2, Trophy, Users, X,
-  Download, Upload, RotateCcw, Search, Lightbulb, Link2, PenTool, Eraser, Printer, FileUp, ExternalLink, Folder, FolderOpen
+  Download, Upload, RotateCcw, Search, Lightbulb, Link2, PenTool, Eraser, Printer, FileUp, ExternalLink, Folder, FolderOpen, Crop
 } from 'lucide-react'
 import './styles.css'
 
 const APP_KEY = 'strategisk-phd-os-v2'
 const DRIVE_FILE = 'strategiSK-data.json'
-const SCHEMA_VERSION = 6
+const SCHEMA_VERSION = 7
 const DRIVE_ROOT_FOLDER = 'strategiSK'
 const MEDIA_FOLDERS = { diary:'diary', learning:'learning-point', learningFiles:'learning-files', thesis:'thesis-drafts', consultation:'consultation', experts:'experts', sketches:'sketches', backups:'backups' }
 const LOCAL_UPDATED_KEY = 'strategisk-local-updated-at'
 const LAST_AUTO_SYNC_KEY = 'strategisk-last-auto-sync-at'
 const LOCAL_DIRTY_KEY = 'strategisk-local-dirty'
 const LAST_CLOUD_SEEN_KEY = 'strategisk-last-cloud-seen-at'
+const LAST_CLOUD_REVISION_KEY = 'strategisk-last-cloud-revision'
 const GOOGLE_REMEMBER_KEY = 'strategisk-google-remember'
-const AUTO_SYNC_MS = 6 * 60 * 60 * 1000
+const DEVICE_ID_KEY = 'strategisk-device-id'
+const DEVICE_NAME_KEY = 'strategisk-device-name'
+const PENDING_COUNT_KEY = 'strategisk-pending-count'
+const AUTO_SYNC_MS = 5 * 60 * 1000
+const IDLE_SYNC_MS = 25 * 1000
+const getDeviceId = () => { let id=localStorage.getItem(DEVICE_ID_KEY); if(!id){ id=(crypto?.randomUUID?.()||`device-${Date.now()}-${Math.random().toString(36).slice(2)}`); localStorage.setItem(DEVICE_ID_KEY,id) } return id }
+const getDeviceName = () => localStorage.getItem(DEVICE_NAME_KEY) || (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Phone / Tablet':'Desktop / Laptop')
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
 const iso = (date = new Date()) => { const d = new Date(date); const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}` }
 const addDays = (n, from = new Date()) => { const d = new Date(from); d.setDate(d.getDate() + n); return iso(d) }
@@ -44,7 +51,7 @@ const formatHijri = (date) => {
 const isDataUrl = v => typeof v === 'string' && v.startsWith('data:')
 const dataUrlToBlob = dataUrl => { const [head,body]=dataUrl.split(','); const mime=(head.match(/data:([^;]+)/)||[])[1]||'application/octet-stream'; const bytes=atob(body); const arr=new Uint8Array(bytes.length); for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i); return new Blob([arr],{type:mime}) }
 const pendingMedia = (dataUrl, name='image.jpg', category='learning') => ({ id:uid(), driveFileId:'', name, mimeType:(dataUrl.match(/^data:([^;]+)/)||[])[1]||'image/jpeg', category, dataUrl, pending:true })
-function MediaImage({media,token,alt='',className=''}){
+function useMediaSrc(media,token){
   const [src,setSrc]=useState(typeof media==='string'?media:(media?.dataUrl||''))
   useEffect(()=>{
     let objectUrl='',cancel=false
@@ -54,7 +61,41 @@ function MediaImage({media,token,alt='',className=''}){
     fetch(`https://www.googleapis.com/drive/v3/files/${media.driveFileId}?alt=media`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.blob():Promise.reject()).then(blob=>{if(cancel)return;objectUrl=URL.createObjectURL(blob);setSrc(objectUrl)}).catch(()=>setSrc(''))
     return()=>{cancel=true;if(objectUrl)URL.revokeObjectURL(objectUrl)}
   },[media,token])
-  return src?<img className={className} src={src} alt={alt}/>:<div className={`media-placeholder ${className}`}><FileImage size={24}/><span>{media?.driveFileId?'Connect Drive to view':'No image'}</span></div>
+  return src
+}
+function MediaImage({media,token,alt='',className='',style}){
+  const src=useMediaSrc(media,token)
+  return src?<img className={className} style={style} src={src} alt={alt}/>:<div className={`media-placeholder ${className}`}><FileImage size={24}/><span>{media?.driveFileId?'Connect Drive to view':'No image'}</span></div>
+}
+function SmartFocusImage({media,token,alt='',className=''}){
+  const src=useMediaSrc(media,token)
+  const [pos,setPos]=useState('50% 24%')
+  useEffect(()=>{
+    if(!src) return
+    let cancelled=false
+    const img=new Image()
+    img.onload=async()=>{
+      if(cancelled) return
+      const fallbackY = img.naturalHeight>img.naturalWidth ? 18 : 28
+      setPos(`50% ${fallbackY}%`)
+      try{
+        if(typeof window==='undefined' || !('FaceDetector' in window)) return
+        const detector=new window.FaceDetector({fastMode:true,maxDetectedFaces:3})
+        const faces=await detector.detect(img)
+        if(cancelled || !faces?.length) return
+        const best=[...faces].sort((a,b)=>((b.boundingBox?.width||0)*(b.boundingBox?.height||0))-((a.boundingBox?.width||0)*(a.boundingBox?.height||0)))[0]
+        const box=best.boundingBox||{}
+        const cx=((box.x||0)+(box.width||0)/2)/(img.naturalWidth||1)*100
+        const cy=((box.y||0)+(box.height||0)*0.38)/(img.naturalHeight||1)*100
+        const clamp=(v,min,max)=>Math.max(min,Math.min(max,v))
+        setPos(`${clamp(cx,20,80)}% ${clamp(cy,12,55)}%`)
+      }catch{}
+    }
+    img.onerror=()=>{}
+    img.src=src
+    return()=>{cancelled=true}
+  },[src])
+  return src?<img className={className} style={{objectPosition:pos}} src={src} alt={alt}/>:<div className={`media-placeholder ${className}`}><FileImage size={24}/><span>{media?.driveFileId?'Connect Drive to view':'No image'}</span></div>
 }
 
 function MediaSlider({items=[],token,alt='Image',variant='contain',onRemove=null}){
@@ -159,7 +200,7 @@ const defaultData = {
   diary: [{ id: uid(), date: iso(), reflection: 'Kemaskan problem statement dan kaitkan isu document-centric e-submission.', win: 'Berjaya naikkan satu versi draft.', mood: 4, image: '', images: [], labels: ['Writing'] }],
   consultations: [{ id: uid(), date: addDays(-2), topic: 'Problem Statement & Significance', comment: 'Strengthen gap dan konteks tempatan.', action: 'Tambah data terkini dan justifikasi.', status: 'Dalam tindakan', image: '', images: [] }],
   draftHistory: [{ id: uid(), draft: 17, date: iso(), focus: 'Problem Statement', pages: 2, note: 'Kemas isu dan jurang kajian.' }],
-  experts: [{ id: uid(), name: 'Expert 01', institution: 'PBT / Universiti', expertise: 'BIM e-Submission', email: '', phone: '', notes: '', image: '', status: 'Belum dihubungi', phase: 'Fuzzy Delphi' }],
+  experts: [{ id: uid(), name: 'Expert 01', institution: 'PBT / Universiti', expertise: 'BIM e-Submission', email: '', phone: '', notes: '', image: '', status: 'Belum dihubungi', phase: 'Fuzzy Delphi', cropX: 50, cropY: 24, cropZoom: 1 }],
   publications: [{ id: uid(), title: 'BIM e-Submission Framework for Malaysian Local Authorities', outlet: 'Target journal', due: addDays(90), status: 'Drafting', progress: 20 }],
   researchPhases: [
     { id: uid(), name: 'Fasa 1 — Temu bual & analisis dokumen', current: 8, target: 20, progress: 40 },
@@ -207,6 +248,7 @@ const defaultData = {
 
 function migrate(raw) {
   const merged = { ...defaultData, ...raw, schemaVersion: SCHEMA_VERSION }
+  merged.experts = (merged.experts||[]).map(x=>({cropX:50,cropY:24,cropZoom:1,...x}))
   merged.profile = { ...defaultData.profile, ...(raw.profile || {}) }
   merged.settings = { ...defaultData.settings, ...(raw.settings || {}) }
   merged.weekly = { ...defaultData.weekly, ...(raw.weekly || {}) }
@@ -238,8 +280,8 @@ function statusClass(status) { return status === 'Selesai' ? 'status-done' : sta
 function App() {
   const [data,setData]=useState(loadData), [page,setPage]=useState('dashboard'), [sidebar,setSidebar]=useState(false)
   const [modal,setModal]=useState(null), [editingDraft,setEditingDraft]=useState(null), [toast,setToast]=useState('')
-  const [drive,setDrive]=useState({token:'',fileId:'',profile:null,syncing:false,lastSync:'',scopeOk:false,apiOk:false,fileStatus:'Belum diperiksa',lastError:'',grantedScopes:''})
-  const tokenClientRef=useRef(null), autoAuthTriedRef=useRef(false)
+  const [drive,setDrive]=useState({token:'',fileId:'',profile:null,syncing:false,lastSync:'',scopeOk:false,apiOk:false,fileStatus:'Belum diperiksa',lastError:'',grantedScopes:'',conflict:false,pendingCount:Number(localStorage.getItem(PENDING_COUNT_KEY)||0),lastDevice:'',syncStatus:'idle'})
+  const tokenClientRef=useRef(null), autoAuthTriedRef=useRef(false), idleSyncTimerRef=useRef(null)
   useEffect(()=>localStorage.setItem(APP_KEY,JSON.stringify(data)),[data])
   useEffect(()=>{ if(toast){const t=setTimeout(()=>setToast(''),3000);return()=>clearTimeout(t)}},[toast])
   useEffect(()=>{document.documentElement.dataset.theme=data.settings.theme},[data.settings.theme])
@@ -250,13 +292,17 @@ function App() {
       if(!last || Date.now()-last>=AUTO_SYNC_MS) syncDrive(drive.token,true)
     }
     check()
-    const timer=setInterval(check,15*60*1000)
-    return()=>clearInterval(timer)
+    const timer=setInterval(check,AUTO_SYNC_MS)
+    const onVisible=()=>{if(document.visibilityState==='visible')syncDrive(drive.token,true)}
+    document.addEventListener('visibilitychange',onVisible)
+    window.addEventListener('focus',onVisible)
+    return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('focus',onVisible)}
   },[data.settings.autoSync,drive.token,drive.profile?.email])
-  const markLocalChanged=()=>{const now=new Date().toISOString();localStorage.setItem(LOCAL_UPDATED_KEY,now);localStorage.setItem(LOCAL_DIRTY_KEY,'1')}
+  const markLocalChanged=()=>{const now=new Date().toISOString();const pending=Number(localStorage.getItem(PENDING_COUNT_KEY)||0)+1;localStorage.setItem(LOCAL_UPDATED_KEY,now);localStorage.setItem(LOCAL_DIRTY_KEY,'1');localStorage.setItem(PENDING_COUNT_KEY,String(pending));setDrive(x=>({...x,pendingCount:pending,syncStatus:x.conflict?'conflict':'pending'}))}
   const localIsDirty=()=>localStorage.getItem(LOCAL_DIRTY_KEY)==='1'
-  const markCloudBaseline=(savedAt)=>{const stamp=savedAt||new Date().toISOString();localStorage.setItem(LOCAL_UPDATED_KEY,stamp);localStorage.setItem(LAST_CLOUD_SEEN_KEY,stamp);localStorage.setItem(LOCAL_DIRTY_KEY,'0');localStorage.setItem(LAST_AUTO_SYNC_KEY,String(Date.now()))}
-  const update=(key,value)=>{markLocalChanged();setData(d=>({...d,[key]:typeof value==='function'?value(d[key]):value}))}
+  const markCloudBaseline=(savedAt,revision='')=>{const stamp=savedAt||new Date().toISOString();localStorage.setItem(LOCAL_UPDATED_KEY,stamp);localStorage.setItem(LAST_CLOUD_SEEN_KEY,stamp);if(revision)localStorage.setItem(LAST_CLOUD_REVISION_KEY,revision);localStorage.setItem(LOCAL_DIRTY_KEY,'0');localStorage.setItem(PENDING_COUNT_KEY,'0');localStorage.setItem(LAST_AUTO_SYNC_KEY,String(Date.now()));setDrive(x=>({...x,pendingCount:0,conflict:false,syncStatus:'synced'}))}
+  const scheduleIdleSync=()=>{if(idleSyncTimerRef.current)clearTimeout(idleSyncTimerRef.current);idleSyncTimerRef.current=setTimeout(()=>{if(data.settings.autoSync&&drive.token&&drive.profile&&!drive.syncing)syncDrive(drive.token,true)},IDLE_SYNC_MS)}
+  const update=(key,value)=>{markLocalChanged();setData(d=>({...d,[key]:typeof value==='function'?value(d[key]):value}));scheduleIdleSync()}
   useEffect(()=>{
     if(autoAuthTriedRef.current||localStorage.getItem(GOOGLE_REMEMBER_KEY)!=='1')return
     autoAuthTriedRef.current=true
@@ -407,12 +453,12 @@ function App() {
     }
     setData(migrated)
     const cloudData=stripLocalMedia(migrated)
-    const body=JSON.stringify({...cloudData,meta:{savedAt,version:SCHEMA_VERSION}})
+    const revision=(crypto?.randomUUID?.()||`rev-${Date.now()}-${Math.random().toString(36).slice(2)}`); const body=JSON.stringify({...cloudData,meta:{savedAt,revision,version:SCHEMA_VERSION,deviceId:getDeviceId(),deviceName:getDeviceName()}})
     let r
     if(existing){r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${existing.id}?uploadType=media`,{method:'PATCH',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body})}
     else{const boundary='strategisk_boundary';const multipart=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({name:DRIVE_FILE,parents:['appDataFolder'],mimeType:'application/json'})}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--`;r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':`multipart/related; boundary=${boundary}`},body:multipart})}
     if(!r.ok)await googleApiError(r,existing?'Gagal mengemas kini fail Drive':'Gagal mencipta fail strategiSK')
-    const result=await r.json();localStorage.setItem(LOCAL_UPDATED_KEY,savedAt);setDrive(x=>({...x,apiOk:true,fileStatus:'Fail strategiSK tersedia',lastError:''}));return {id:result.id||existing?.id||'',savedAt}
+    const result=await r.json();localStorage.setItem(LOCAL_UPDATED_KEY,savedAt);setDrive(x=>({...x,apiOk:true,fileStatus:'Fail strategiSK tersedia',lastError:''}));return {id:result.id||existing?.id||'',savedAt,revision}
   }
   async function fetchRemoteData(token,existing){const r=await fetch(`https://www.googleapis.com/drive/v3/files/${existing.id}?alt=media`,{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)await googleApiError(r,'Gagal memuat turun data Google Drive');return r.json()}
   async function testDrive(token=drive.token){
@@ -429,18 +475,20 @@ function App() {
       await ensureVisibleFolder(token,DRIVE_ROOT_FOLDER,'root')
       if(!existing)throw new Error('Drive berjaya disambung, tetapi strategiSK-data.json belum wujud dalam cloud. Gunakan Paksa Simpan hanya jika peranti ini memang mengandungi data utama.')
       setDrive(x=>({...x,apiOk:true,fileStatus:'Data + folder media OK',lastError:''}))
-      // Cloud-first only when this device has no unsynced edits.
+      const remote=await fetchRemoteData(token,existing)
+      const meta=remote.meta||{}
+      const savedAt=meta.savedAt||existing.modifiedTime||new Date().toISOString(), revision=meta.revision||'', lastDevice=meta.deviceName||''
       if(localIsDirty()){
-        setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:'',apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
-        if(!quiet)showToast('Login berjaya. Peranti ini ada perubahan yang belum disimpan — tekan Sync Sekarang untuk simpan ke Drive.')
+        const baseRev=localStorage.getItem(LAST_CLOUD_REVISION_KEY)||'', baseStamp=localStorage.getItem(LAST_CLOUD_SEEN_KEY)||''
+        const changed=baseRev&&revision?revision!==baseRev:!!baseStamp&&new Date(savedAt).getTime()>new Date(baseStamp).getTime()+1000
+        setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:'',apiOk:true,fileStatus:changed?'CONFLICT — cloud lebih baru':`Fail ditemui: ${DRIVE_FILE}`,lastError:'',conflict:changed,lastDevice,syncStatus:changed?'conflict':'pending'}))
+        if(!quiet)showToast(changed?'Perubahan cloud dikesan pada device lain. Sync dihentikan supaya data tidak ditindih.':'Login berjaya. Device ini ada perubahan belum sync.')
         return
       }
       if(!quiet)showToast('Drive OK. Mengambil data terkini dari Google Drive...')
-      const remote=await fetchRemoteData(token,existing)
-      const savedAt=remote.meta?.savedAt||existing.modifiedTime||new Date().toISOString()
       delete remote.meta
       setData(migrate(remote))
-      markCloudBaseline(savedAt)
+      markCloudBaseline(savedAt,revision)
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
       if(!quiet)showToast('Data terkini Google Drive berjaya dimuatkan ke peranti ini.')
     }catch(e){
@@ -450,13 +498,13 @@ function App() {
   }
   async function reconnectDrive(){
     try{if(drive.token&&window.google?.accounts?.oauth2?.revoke)await new Promise(resolve=>window.google.accounts.oauth2.revoke(drive.token,()=>resolve()))}catch{}
-    setDrive({token:'',fileId:'',profile:null,syncing:false,lastSync:'',scopeOk:false,apiOk:false,fileStatus:'Belum diperiksa',lastError:'',grantedScopes:''})
+    setDrive({token:'',fileId:'',profile:null,syncing:false,lastSync:'',scopeOk:false,apiOk:false,fileStatus:'Belum diperiksa',lastError:'',grantedScopes:'',conflict:false,pendingCount:Number(localStorage.getItem(PENDING_COUNT_KEY)||0),lastDevice:'',syncStatus:'idle'})
     setTimeout(()=>initGoogleClient((token)=>safeCloudImportAfterAuth(token,false),true),100)
   }
   async function profileReconnectTestSync(){
     if(drive.syncing)return
-    showToast('Menyambung Google dan mengambil data terkini dari Drive...')
-    const afterAuth=async(token)=>safeCloudImportAfterAuth(token,false)
+    showToast('Menyambung Google, semak cloud revision dan sync dengan selamat...')
+    const afterAuth=async(token)=>syncDrive(token,false)
     try{
       await initGoogleClient(afterAuth,false)
     }catch(e){
@@ -470,7 +518,7 @@ function App() {
     setDrive(x=>({...x,syncing:true}))
     try{
       const existing=await findDriveFile(token),result=await uploadDriveData(token,existing)
-      markCloudBaseline(result.savedAt)
+      markCloudBaseline(result.savedAt,result.revision)
       setDrive(x=>({...x,fileId:result.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'})}))
       showToast('Data peranti ini berjaya disimpan ke Google Drive.')
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
@@ -482,10 +530,10 @@ function App() {
     try{
       const existing=await findDriveFile(token)
       if(!existing)throw new Error('Drive API OK tetapi fail strategiSK belum wujud. Gunakan Paksa Simpan hanya pada peranti yang memang mempunyai data utama.')
-      const remote=await fetchRemoteData(token,existing),savedAt=remote.meta?.savedAt||existing.modifiedTime
-      try{await createVisibleBackup(token,data,'before-force-download')}catch{}
+      const remote=await fetchRemoteData(token,existing),meta=remote.meta||{},savedAt=meta.savedAt||existing.modifiedTime,revision=meta.revision||''
+      try{if(localIsDirty())await createVisibleBackup(token,data,'local-before-force-download')}catch{}
       delete remote.meta
-      setData(migrate(remote));markCloudBaseline(savedAt||new Date().toISOString())
+      setData(migrate(remote));markCloudBaseline(savedAt||new Date().toISOString(),revision)
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
       showToast('Data Google Drive berjaya dimuatkan ke peranti ini.')
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
@@ -504,33 +552,49 @@ function App() {
           return
         }
         const result=await uploadDriveData(token)
-        markCloudBaseline(result.savedAt)
+        markCloudBaseline(result.savedAt,result.revision)
         setDrive(x=>({...x,fileId:result.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail dicipta: ${DRIVE_FILE}`}))
         if(!quiet)showToast('Perubahan device disimpan sebagai data cloud pertama.')
         return
       }
       const remote=await fetchRemoteData(token,existing)
-      const remoteSavedAt=remote.meta?.savedAt||existing.modifiedTime||new Date().toISOString()
+      const remoteMeta=remote.meta||{}
+      const remoteSavedAt=remoteMeta.savedAt||existing.modifiedTime||new Date().toISOString(),remoteRevision=remoteMeta.revision||'',remoteDevice=remoteMeta.deviceName||''
       const remoteTime=new Date(remoteSavedAt).getTime()||0
-      const baselineStamp=localStorage.getItem(LAST_CLOUD_SEEN_KEY)||''
+      const baselineStamp=localStorage.getItem(LAST_CLOUD_SEEN_KEY)||'',baselineRevision=localStorage.getItem(LAST_CLOUD_REVISION_KEY)||''
       const baselineTime=baselineStamp?new Date(baselineStamp).getTime():0
 
       if(dirty){
-        // Explicit/auto sync with local edits: device wins, but cloud is backed up first by uploadDriveData.
-        const cloudAlsoChanged=baselineTime>0 && remoteTime>baselineTime+1000
-        const result=await uploadDriveData(token,existing,{backup:cloudAlsoChanged})
-        markCloudBaseline(result.savedAt)
-        if(!quiet)showToast(cloudAlsoChanged?'Perubahan device disimpan. Versi cloud sebelumnya turut dibackup untuk keselamatan.':'Perubahan terbaru device berjaya disimpan ke Google Drive.')
+        const cloudAlsoChanged=baselineRevision&&remoteRevision?remoteRevision!==baselineRevision:(baselineTime>0&&remoteTime>baselineTime+1000)
+        if(cloudAlsoChanged){
+          try{await createVisibleBackup(token,data,'conflict-local-pending')}catch{}
+          setDrive(x=>({...x,syncing:false,conflict:true,lastDevice:remoteDevice,fileStatus:'CONFLICT — cloud lebih baru',syncStatus:'conflict'}))
+          if(!quiet)showToast(`Sync dihentikan: cloud berubah${remoteDevice?` pada ${remoteDevice}`:''}. Pilih penyelesaian konflik dalam Settings.`)
+          return
+        }
+        const result=await uploadDriveData(token,existing,{backup:false})
+        markCloudBaseline(result.savedAt,result.revision)
+        if(!quiet)showToast('Perubahan terbaru device berjaya disimpan ke Google Drive.')
       }else{
-        // No edits on this device: never upload. Always refresh from Drive.
         delete remote.meta
         setData(migrate(remote))
-        markCloudBaseline(remoteSavedAt)
-        if(!quiet)showToast(remoteTime>baselineTime?'Data terbaru dari Google Drive dimuatkan ke device.':'Tiada perubahan pada device — data Drive disegarkan semula.')
+        markCloudBaseline(remoteSavedAt,remoteRevision)
+        setDrive(x=>({...x,lastDevice:remoteDevice}))
+        if(!quiet)showToast(remoteTime>baselineTime?'Data terbaru dari Google Drive dimuatkan ke device.':'Device sudah menggunakan data cloud terkini.')
       }
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));if(!quiet)showToast(e.message)}
   }
+
+  async function resolveConflictKeepCloud(token=drive.token){
+    if(!token)return initGoogleClient(resolveConflictKeepCloud,false)
+    try{setDrive(x=>({...x,syncing:true}));const existing=await findDriveFile(token);if(!existing)throw new Error('Data cloud tidak ditemui.');try{await createVisibleBackup(token,data,'conflict-local-before-cloud')}catch{};const remote=await fetchRemoteData(token,existing),meta=remote.meta||{};delete remote.meta;setData(migrate(remote));markCloudBaseline(meta.savedAt||existing.modifiedTime||new Date().toISOString(),meta.revision||'');setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:meta.deviceName||'',fileStatus:'Conflict selesai — cloud digunakan'}));showToast('Conflict selesai: data cloud terbaru digunakan. Salinan local dibuat sebagai backup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
+  }
+  async function resolveConflictKeepLocal(token=drive.token){
+    if(!token)return initGoogleClient(resolveConflictKeepLocal,false)
+    try{setDrive(x=>({...x,syncing:true}));const existing=await findDriveFile(token);if(existing){try{const remote=await fetchRemoteData(token,existing);await createVisibleBackup(token,remote,'conflict-cloud-before-local')}catch{}}const result=await uploadDriveData(token,existing,{backup:false});markCloudBaseline(result.savedAt,result.revision);setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:getDeviceName(),fileStatus:'Conflict selesai — device ini digunakan'}));showToast('Conflict selesai: perubahan device ini disimpan. Versi cloud lama dibackup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
+  }
+
   async function manualDriveBackup(token=drive.token){
     if(token && typeof token !== 'string') token=drive.token
     if(!token)return initGoogleClient(manualDriveBackup,true)
@@ -558,7 +622,7 @@ function App() {
   const props={data,update,setModal,showToast,driveToken:drive.token,uploadLearningAttachment,uploadDraftAttachment}
   return <div className={`app ${data.settings.compact?'compact':''}`}>
     <aside className={`sidebar ${sidebar?'open':''}`}><button className="brand brand-button" type="button" aria-label="Go to Dashboard" title="Dashboard" onClick={()=>{setPage('dashboard');setSidebar(false);window.scrollTo({top:0,behavior:'smooth'})}}><div className="brand-shield">SK</div><div><div className="brand-name">strategi<span>SK</span></div><div className="brand-tag">{data.profile.tagline}</div></div></button><nav>{menu.map(([id,Icon,label])=><button key={id} className={page===id?'active':''} onClick={()=>{setPage(id);setSidebar(false)}}><Icon size={18}/><span>{label}</span></button>)}</nav><div className="side-progress"><div className="side-progress-head"><span>GBT PROGRESS</span></div><Ring value={gbtProgress} label="perjalanan" size={104}/><div className="side-stat"><span>Target GBT</span><b>30 bulan</b></div><div className="side-stat"><span>Hari berbaki</span><b>{targetDays}</b></div><button className="primary full" onClick={()=>setModal('progress')}><Gauge size={16}/> Lihat Butiran</button><Rocket className="side-rocket" size={46}/></div></aside>
-    {sidebar&&<div className="sidebar-scrim" onClick={()=>setSidebar(false)}/>}<main><header className="topbar"><button className="icon-btn menu-btn" onClick={()=>setSidebar(true)}><Menu/></button><div className="welcome"><h1>{page==='dashboard'?<>Selamat kembali, <span className="welcome-name">{data.profile.name}</span></>:title}</h1><p>{page==='dashboard'?`Perjalanan pembelajaran Hari ke-${Math.max(1,elapsedDays)} SK`:'Urus dan kemaskini rekod'}</p></div><div className="top-actions"><button className="icon-btn" onClick={()=>update('settings',s=>({...s,theme:s.theme==='dark'?'light':'dark'}))}>{data.settings.theme==='dark'?<Sun/>:<Moon/>}</button>{drive.profile&&<button className="drive-button" onClick={()=>syncDrive()}><Cloud size={18}/><span>{drive.syncing?'Menyegerak...':'Sync Sekarang'}</span></button>}<button className="avatar avatar-sync" type="button" onClick={profileReconnectTestSync} disabled={drive.syncing} title="Sign in / refresh Google Drive session" aria-label="Sign in / refresh Google Drive session"><CircleUserRound/><span>{drive.syncing?'CONNECTING...':(drive.profile?.given_name||'SIGN IN')}</span></button></div></header>
+    {sidebar&&<div className="sidebar-scrim" onClick={()=>setSidebar(false)}/>}<main><header className="topbar"><button className="icon-btn menu-btn" onClick={()=>setSidebar(true)}><Menu/></button><div className="welcome"><h1>{page==='dashboard'?<>Selamat kembali, <span className="welcome-name">{data.profile.name}</span></>:title}</h1><p>{page==='dashboard'?`Perjalanan pembelajaran Hari ke-${Math.max(1,elapsedDays)} SK`:'Urus dan kemaskini rekod'}</p></div><div className="top-actions"><button className="icon-btn" onClick={()=>update('settings',s=>({...s,theme:s.theme==='dark'?'light':'dark'}))}>{data.settings.theme==='dark'?<Sun/>:<Moon/>}</button>{drive.profile&&<button className="drive-button" onClick={()=>syncDrive()}><Cloud size={18}/><span>{drive.syncing?'Menyegerak...':drive.conflict?'Conflict':drive.pendingCount>0?`${drive.pendingCount} Pending`:'Synced'}</span></button>}<button className="avatar avatar-sync" type="button" onClick={profileReconnectTestSync} disabled={drive.syncing} title="Sign in / refresh Google Drive session" aria-label="Sign in / refresh Google Drive session"><CircleUserRound/><span>{drive.syncing?'CONNECTING...':(drive.profile?.given_name||'SIGN IN')}</span></button></div></header>
       <section className="content">
         {page==='dashboard'&&<Dashboard {...props} targetDays={targetDays} gbtProgress={gbtProgress} draftProgress={draftProgress} todayTasks={todayTasks} todayEvents={todayEvents} weeklyProgress={weeklyProgress}/>} 
         {page==='calendar'&&<CalendarPage {...props}/>} {page==='learning'&&<LearningPointPage {...props}/>} {page==='draft'&&<DraftPage {...props} setEditingDraft={setEditingDraft}/>} 
@@ -566,7 +630,7 @@ function App() {
         {page==='data'&&<ResearchDataPage {...props}/>} {page==='analysis'&&<SimpleProgressPage title="Data Analysis" items={data.analysis} setItems={v=>update('analysis',v)} nameKey="name"/>}
         {page==='experts'&&<ExpertsPage {...props}/>} {page==='publications'&&<PublicationsPage {...props}/>} 
         {page==='weekly'&&<WeeklyPage {...props} sendWhatsApp={sendWhatsApp} sendTelegram={sendTelegram}/>} {page==='monthly'&&<MonthlyPage {...props}/>} {page==='consultation'&&<ConsultationPage {...props}/>} 
-        {page==='settings'&&<SettingsPage {...props} drive={drive} saveDrive={saveDrive} loadDrive={loadDrive} syncDrive={syncDrive} testDrive={testDrive} reconnectDrive={reconnectDrive} exportJson={exportJson} importJson={importJson} manualDriveBackup={manualDriveBackup}/>} 
+        {page==='settings'&&<SettingsPage {...props} drive={drive} saveDrive={saveDrive} loadDrive={loadDrive} syncDrive={syncDrive} testDrive={testDrive} reconnectDrive={reconnectDrive} exportJson={exportJson} importJson={importJson} manualDriveBackup={manualDriveBackup} resolveConflictKeepCloud={resolveConflictKeepCloud} resolveConflictKeepLocal={resolveConflictKeepLocal}/>} 
       </section></main>
     <nav className="mobile-nav">{[['dashboard',Home,'Home'],['calendar',CalendarDays,'Kalendar'],['learning',Lightbulb,'Learning'],['weekly',Target,'Weekly'],['settings',Settings,'More']].map(([id,Icon,label])=><button key={id} className={page===id?'active':''} onClick={()=>setPage(id)}><Icon size={20}/><span>{label}</span></button>)}</nav>
     {!drive.profile&&<div className="auth-lock"><div className="auth-lock-card"><div className="brand-shield auth-lock-logo">SK</div><span className="eyebrow">PERSONAL GOOGLE DRIVE</span><h2>Sign in sebelum guna strategiSK</h2><p>Untuk elak data device lama menimpa Drive, semua fungsi dikunci sehingga akaun Google berjaya disambungkan. Jika device ini tiada perubahan belum sync, app akan terus memuatkan data terbaru dari Drive.</p><button className="primary auth-signin" onClick={profileReconnectTestSync} disabled={drive.syncing}><CircleUserRound size={18}/>{drive.syncing?'Menyambung...':'Sign in Google'}</button><small>Selepas berjaya, sesi Google akan cuba dipulihkan secara automatik pada kunjungan seterusnya selagi sesi Google pada browser masih aktif.</small></div></div>}
@@ -762,11 +826,12 @@ function LearningPointPage({data,update,showToast,driveToken,uploadLearningAttac
 function SimpleProgressPage({title,items,setItems,nameKey}){return <div className="card editable-list"><div className="section-title"><div><h2>{title}</h2><p>Klik nama atau progress untuk ubah suai.</p></div><button className="primary" onClick={()=>setItems([...items,{id:uid(),[nameKey]:'Item baharu',progress:0}])}><Plus/> Tambah</button></div>{items.map(x=><div className="edit-progress" key={x.id}><input value={x[nameKey]} onChange={e=>setItems(items.map(i=>i.id===x.id?{...i,[nameKey]:e.target.value}:i))}/><input type="range" min="0" max="100" value={x.progress} onChange={e=>setItems(items.map(i=>i.id===x.id?{...i,progress:+e.target.value}:i))}/><b>{x.progress}%</b><button className="icon-btn danger" onClick={()=>setItems(items.filter(i=>i.id!==x.id))}><Trash2 size={17}/></button></div>)}</div>}
 function ResearchDataPage({data,update}){const add=()=>update('researchPhases',xs=>[...xs,{id:uid(),name:'Fasa / sampel baharu',current:0,target:10,progress:0}]);return <div className="page-grid"><div className="card"><div className="section-title"><div><h2>Fasa Kajian</h2><p>Pantau sasaran dan pencapaian pengumpulan data.</p></div><button className="primary" onClick={add}><Plus/> Tambah</button></div>{data.researchPhases.map(x=><div className="phase-editor phase-with-delete" key={x.id}><input value={x.name} onChange={e=>update('researchPhases',xs=>xs.map(i=>i.id===x.id?{...i,name:e.target.value}:i))}/><div><Field label="Semasa"><input type="number" value={x.current} onChange={e=>update('researchPhases',xs=>xs.map(i=>i.id===x.id?{...i,current:+e.target.value,progress:pct(+e.target.value,i.target)}:i))}/></Field><Field label="Sasaran"><input type="number" value={x.target} onChange={e=>update('researchPhases',xs=>xs.map(i=>i.id===x.id?{...i,target:+e.target.value,progress:pct(i.current,+e.target.value)}:i))}/></Field></div><div className="bar"><i style={{width:`${x.progress}%`}}/></div><button className="icon-btn danger phase-delete" onClick={()=>update('researchPhases',xs=>xs.filter(i=>i.id!==x.id))}><Trash2 size={17}/></button></div>)}</div><div className="card"><CardTitle title="Ringkasan Visual" icon={<BarChart3/>}/><div className="big-bars">{data.researchPhases.map(x=><div key={x.id}><span>{x.name}</span><div><i style={{height:`${Math.max(8,x.progress*1.8)}px`}}/><b>{x.progress}%</b></div></div>)}</div></div></div>}
 function ExpertsPage({data,update,driveToken}){
-  const add=()=>update('experts',xs=>[...xs,{id:uid(),name:'',institution:'',expertise:'',email:'',phone:'',notes:'',image:'',status:'Belum dihubungi',phase:'Fuzzy Delphi'}])
-  const upload=(id,file)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>update('experts',xs=>xs.map(i=>i.id===id?{...i,image:pendingMedia(reader.result,file.name,'experts')}:i));reader.readAsDataURL(file)}
+  const [cropOpen,setCropOpen]=useState({})
+  const add=()=>update('experts',xs=>[...xs,{id:uid(),name:'',institution:'',expertise:'',email:'',phone:'',notes:'',image:'',status:'Belum dihubungi',phase:'Fuzzy Delphi',cropX:50,cropY:24,cropZoom:1}])
+  const upload=(id,file)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>update('experts',xs=>xs.map(i=>i.id===id?{...i,image:pendingMedia(reader.result,file.name,'experts'),cropX:i.cropX??50,cropY:i.cropY??24,cropZoom:i.cropZoom??1}:i));reader.readAsDataURL(file)}
   const patch=(id,key,value)=>update('experts',xs=>xs.map(i=>i.id===id?{...i,[key]:value}:i))
   const printAll=async()=>{const printTab=window.open('','_blank','width=1200,height=800');if(!printTab)return;printTab.document.write('<p style="font-family:Arial;padding:30px">Preparing Expert List…</p>');const rows=[];for(let i=0;i<data.experts.length;i++){const x=data.experts[i],photo=await mediaDataUrl(x.image,driveToken);rows.push(`<tr><td>${i+1}</td><td>${photo?`<img class="expert-photo" src="${photo}">`:''}</td><td><b>${escapeHtml(x.name||'')}</b></td><td>${escapeHtml(x.institution||'')}</td><td>${escapeHtml(x.expertise||'')}</td><td>${escapeHtml(x.phase||'')}</td><td>${escapeHtml(x.email||'')}<br>${escapeHtml(x.phone||'')}</td><td>${escapeHtml(x.status||'')}</td><td>${nl2br(x.notes||'')}</td></tr>`)}printWindow(`<h1>Expert List</h1><div class="meta">Generated ${escapeHtml(new Date().toLocaleString('ms-MY'))} · ${data.experts.length} expert(s)</div><table><thead><tr><th>No.</th><th>Photo</th><th>Name</th><th>Institution</th><th>Expertise</th><th>Phase / Role</th><th>Contact</th><th>Status</th><th>Key Notes</th></tr></thead><tbody>${rows.join('')}</tbody></table>`,'strategiSK Expert List',printTab)}
-  return <div className="experts-page"><div className="section-title"><div><h2>Expert List</h2><p>Expert profile, contact information, key notes and reference photo.</p></div><div className="section-actions"><button className="secondary" onClick={printAll}><Printer/> Print / PDF All</button><button className="primary" onClick={add}><Plus/> Add Expert</button></div></div><div className="expert-card-list">{data.experts.map((x,index)=><div className="card expert-card" key={x.id}><div className="expert-card-head"><div><span className="eyebrow">EXPERT {String(index+1).padStart(2,'0')}</span><h3>{x.name||'Expert baharu'}</h3></div><button className="icon-btn danger" onClick={()=>update('experts',xs=>xs.filter(i=>i.id!==x.id))}><Trash2 size={18}/></button></div><div className="expert-main-grid"><label className={`expert-photo-upload ${x.image?'has-image':''}`}>{x.image?<MediaImage media={x.image} token={driveToken} alt={x.name||'Expert'}/>:<><CircleUserRound size={42}/><span>Upload expert photo</span></>}<input type="file" accept="image/*" onChange={e=>upload(x.id,e.target.files?.[0])}/></label><div className="expert-fields-top"><Field label="Name"><input value={x.name} onChange={e=>patch(x.id,'name',e.target.value)}/></Field><Field label="Institution / Organisation"><input value={x.institution} onChange={e=>patch(x.id,'institution',e.target.value)}/></Field><Field label="Expertise"><input value={x.expertise} onChange={e=>patch(x.id,'expertise',e.target.value)}/></Field><Field label="Phase / Role"><input value={x.phase} onChange={e=>patch(x.id,'phase',e.target.value)}/></Field></div></div><div className="expert-contact-row"><Field label="Email"><input type="email" value={x.email} onChange={e=>patch(x.id,'email',e.target.value)}/></Field><Field label="Phone"><input value={x.phone} onChange={e=>patch(x.id,'phone',e.target.value)}/></Field><Field label="Status"><select value={x.status} onChange={e=>patch(x.id,'status',e.target.value)}><option>Belum dihubungi</option><option>Jemputan dihantar</option><option>Setuju</option><option>Selesai</option><option>Tolak</option></select></Field></div><Field label="Key Notes"><textarea className="expert-notes" rows="6" value={x.notes} placeholder="Contoh: kepakaran khusus, perkara penting semasa dihubungi, potensi soalan, persetujuan, tarikh follow-up..." onChange={e=>patch(x.id,'notes',e.target.value)}/></Field></div>)}</div></div>
+  return <div className="experts-page"><div className="section-title"><div><h2>Expert List</h2><p>Expert profile, contact information, key notes and reference photo.</p></div><div className="section-actions"><button className="secondary" onClick={printAll}><Printer/> Print / PDF All</button><button className="primary" onClick={add}><Plus/> Add Expert</button></div></div><div className="expert-card-list">{data.experts.map((x,index)=>{const open=!!cropOpen[x.id],cropStyle={objectPosition:`${x.cropX??50}% ${x.cropY??24}%`,transform:`scale(${x.cropZoom??1})`};return <div className="card expert-card" key={x.id}><div className="expert-card-head"><div><span className="eyebrow">EXPERT {String(index+1).padStart(2,'0')}</span><h3>{x.name||'Expert baharu'}</h3></div><div className="expert-card-head-actions">{x.image&&<button className={`icon-btn crop-mini-btn ${open?'active':''}`} type="button" title={open?'Hide crop controls':'Adjust photo crop'} aria-label={open?'Hide crop controls':'Adjust photo crop'} onClick={()=>setCropOpen(s=>({...s,[x.id]:!s[x.id]}))}><Crop size={15}/></button>}<button className="icon-btn danger" onClick={()=>update('experts',xs=>xs.filter(i=>i.id!==x.id))}><Trash2 size={18}/></button></div></div><div className="expert-main-grid"><label className={`expert-photo-upload expert-photo-smart ${x.image?'has-image':''}`}>{x.image?<MediaImage media={x.image} token={driveToken} alt={x.name||'Expert'} style={cropStyle}/>:<><CircleUserRound size={42}/><span>Upload expert photo</span></>}<input type="file" accept="image/*" onChange={e=>upload(x.id,e.target.files?.[0])}/></label><div className="expert-fields-top"><Field label="Name"><input value={x.name} onChange={e=>patch(x.id,'name',e.target.value)}/></Field><Field label="Institution / Organisation"><input value={x.institution} onChange={e=>patch(x.id,'institution',e.target.value)}/></Field><Field label="Expertise"><input value={x.expertise} onChange={e=>patch(x.id,'expertise',e.target.value)}/></Field><Field label="Phase / Role"><input value={x.phase} onChange={e=>patch(x.id,'phase',e.target.value)}/></Field></div></div>{x.image&&open&&<div className="expert-crop-tools"><div className="crop-tool-row"><span>Focus Left / Right</span><input type="range" min="0" max="100" value={x.cropX??50} onChange={e=>patch(x.id,'cropX',+e.target.value)}/><b>{Math.round(x.cropX??50)}%</b></div><div className="crop-tool-row"><span>Focus Up / Down</span><input type="range" min="0" max="100" value={x.cropY??24} onChange={e=>patch(x.id,'cropY',+e.target.value)}/><b>{Math.round(x.cropY??24)}%</b></div><div className="crop-tool-row"><span>Zoom</span><input type="range" min="1" max="1.8" step="0.02" value={x.cropZoom??1} onChange={e=>patch(x.id,'cropZoom',+e.target.value)}/><b>{(x.cropZoom??1).toFixed(2)}x</b></div><div className="crop-hint">Auto focus starts near the upper-centre so faces usually sit better in frame. Adjust only if needed.</div></div>}<div className="expert-contact-row"><Field label="Email"><input type="email" value={x.email} onChange={e=>patch(x.id,'email',e.target.value)}/></Field><Field label="Phone"><input value={x.phone} onChange={e=>patch(x.id,'phone',e.target.value)}/></Field><Field label="Status"><select value={x.status} onChange={e=>patch(x.id,'status',e.target.value)}><option>Belum dihubungi</option><option>Jemputan dihantar</option><option>Setuju</option><option>Selesai</option><option>Tolak</option></select></Field></div><Field label="Key Notes"><textarea className="expert-notes" rows="6" value={x.notes} placeholder="Contoh: kepakaran khusus, perkara penting semasa dihubungi, potensi soalan, persetujuan, tarikh follow-up..." onChange={e=>patch(x.id,'notes',e.target.value)}/></Field></div>})}</div></div>
 }
 
 function PublicationsPage({data,update}){const add=()=>update('publications',xs=>[...xs,{id:uid(),title:'Artikel baharu',outlet:'',due:addDays(60),status:'Idea',progress:0}]);return <div className="card"><div className="section-title"><div><h2>Publication Tracker</h2><p>Rancang tarikh submit dan pantau status penerbitan.</p></div><button className="primary" onClick={add}><Plus/> Tambah</button></div>{data.publications.map(x=><div className="publication publication-delete" key={x.id}><div><input className="title-input" value={x.title} onChange={e=>update('publications',xs=>xs.map(i=>i.id===x.id?{...i,title:e.target.value}:i))}/><input value={x.outlet} onChange={e=>update('publications',xs=>xs.map(i=>i.id===x.id?{...i,outlet:e.target.value}:i))}/></div><input type="date" value={x.due} onChange={e=>update('publications',xs=>xs.map(i=>i.id===x.id?{...i,due:e.target.value}:i))}/><select value={x.status} onChange={e=>update('publications',xs=>xs.map(i=>i.id===x.id?{...i,status:e.target.value}:i))}><option>Idea</option><option>Drafting</option><option>Submitted</option><option>Revision</option><option>Accepted</option><option>Published</option></select><input type="range" min="0" max="100" value={x.progress} onChange={e=>update('publications',xs=>xs.map(i=>i.id===x.id?{...i,progress:+e.target.value}:i))}/><b>{x.progress}%</b><button className="icon-btn danger" onClick={()=>update('publications',xs=>xs.filter(i=>i.id!==x.id))}><Trash2 size={17}/></button></div>)}</div>}
@@ -838,7 +903,7 @@ function DraftPage({data,update,setModal,setEditingDraft,uploadDraftAttachment,s
   </div>
 }
 
-function SettingsPage({data,update,drive,saveDrive,loadDrive,syncDrive,testDrive,reconnectDrive,exportJson,importJson,manualDriveBackup}){const p=data.profile,setP=(k,v)=>update('profile',{...p,[k]:v});return <div className="settings-grid"><div className="card form-card"><CardTitle title="Profile & GBT Target" icon={<Settings/>}/><Field label="Name"><input value={p.name} onChange={e=>setP('name',e.target.value)}/></Field><Field label="Tagline"><input value={p.tagline} onChange={e=>setP('tagline',e.target.value)}/></Field><div className="form-grid"><Field label="Tarikh mula PhD"><input type="date" value={p.startDate} onChange={e=>setP('startDate',e.target.value)}/></Field><Field label="Target GBT"><input type="date" value={p.targetDate} onChange={e=>setP('targetDate',e.target.value)}/></Field><Field label="Draft semasa"><input type="number" value={p.currentDraft} onChange={e=>setP('currentDraft',+e.target.value)}/></Field><Field label="Sasaran draft"><input type="number" value={p.draftGoal} onChange={e=>setP('draftGoal',+e.target.value)}/></Field></div></div><div className="card form-card"><CardTitle title="Personal Google Drive" icon={<Cloud/>}/><div className={`connection ${drive.profile?'connected':''}`}><Cloud size={28}/><div><b>{drive.profile?`Disambung: ${drive.profile.email}`:'Belum disambung'}</b><small>{drive.lastSync?`Sync terakhir ${drive.lastSync}`:'Sambungkan akaun Google yang sama pada PC dan telefon.'}</small></div></div><div className="drive-diagnostics"><div><span>Scopes appData + media</span><b className={drive.scopeOk?'diag-ok':'diag-warn'}>{drive.scopeOk?'OK':'Belum disahkan'}</b></div><div><span>Google Drive API</span><b className={drive.apiOk?'diag-ok':'diag-warn'}>{drive.apiOk?'OK':'Belum diuji'}</b></div><div><span>Fail cloud</span><b>{drive.fileStatus}</b></div>{drive.lastError&&<div className="diag-error"><span>Ralat terakhir</span><b>{drive.lastError}</b></div>}</div><div className="button-row"><button className="primary" onClick={()=>syncDrive()}><Cloud/> Smart Sync</button><button className="secondary" onClick={()=>testDrive()}><Database/> Uji Drive</button><button className="secondary" onClick={()=>reconnectDrive()}><RotateCcw/> Reconnect</button><button className="secondary" onClick={()=>saveDrive()}><CloudUpload/> Paksa Simpan</button><button className="secondary" onClick={()=>loadDrive()}><CloudDownload/> Paksa Muat Turun</button></div><p className="hint"><b>Uji Drive</b> semak data tersembunyi dan folder media. v34.9 menggunakan <code>drive.appdata</code> untuk database serta <code>drive.file</code> untuk folder <b>My Drive → strategiSK</b>. Smart Sync: jika device berubah, perubahan dihantar ke Drive; jika device tidak berubah, data terbaru Drive dimuat turun. Selepas naik taraf, tambah kedua-dua scope dalam Google Auth Platform → Data Access dan tekan <b>Reconnect</b> sekali. Origin semasa: <code>{window.location.origin}</code></p></div><div className="card form-card storage-card"><CardTitle title="Safe Storage Architecture — v34.9" icon={<Database/>}/><p className="hint">Database teks kekal di <b>appDataFolder</b>. Gambar dan sketch dipindahkan semasa sync ke folder biasa dalam My Drive.</p><div className="storage-tree"><code>strategiSK/</code><code>├─ diary/</code><code>├─ learning-point/</code><code>├─ learning-files/</code><code>├─ thesis-drafts/</code><code>├─ consultation/</code><code>├─ experts/</code><code>├─ sketches/</code><code>└─ backups/</code></div><p className="hint">Schema data semasa: <b>v{data.schemaVersion||SCHEMA_VERSION}</b>. Data versi lama dimigrate tanpa reset.</p></div><div className="card form-card"><CardTitle title="FOW & FOD Recipients" icon={<Send/>}/><Field label="Nombor WhatsApp SV / CRMP (format 6012...)"><input value={p.whatsapp} onChange={e=>setP('whatsapp',e.target.value)} placeholder="60123456789"/></Field><Field label="Telegram Chat ID"><input value={p.telegramChatId} onChange={e=>setP('telegramChatId',e.target.value)} placeholder="123456789"/></Field><p className="hint">Butang hantar terletak terus dalam bahagian FOW dan FOD.</p></div><div className="card form-card"><CardTitle title="Display & Backup" icon={<Download/>}/><label className="check-card"><input type="checkbox" checked={data.settings.compact} onChange={e=>update('settings',{...data.settings,compact:e.target.checked})}/><span><b>Compact dashboard</b><small>Kurangkan jarak kad untuk skrin kecil.</small></span></label><label className="check-card"><input type="checkbox" checked={data.settings.showGraphics} onChange={e=>update('settings',{...data.settings,showGraphics:e.target.checked})}/><span><b>Elemen grafik</b><small>Papar chart dan ilustrasi.</small></span></label><label className="check-card"><input type="checkbox" checked={data.settings.autoSync!==false} onChange={e=>update('settings',{...data.settings,autoSync:e.target.checked})}/><span><b>Auto Sync setiap 6 jam</b><small>Apabila Google Drive telah disambungkan dan app sedang dibuka, strategiSK akan menjalankan Smart Sync secara automatik setiap 6 jam: upload hanya jika device berubah, selain itu refresh dari Drive.</small></span></label><div className="button-row"><button className="secondary" onClick={exportJson}><Download/> Export JSON</button><button className="secondary" onClick={()=>manualDriveBackup()}><CloudUpload/> Snapshot Drive</button><label className="secondary file-button"><Upload/> Import JSON<input type="file" accept="application/json" onChange={importJson}/></label><button className="danger-btn" onClick={()=>{if(confirm('Reset semua data?')){localStorage.removeItem(APP_KEY);location.reload()}}}><RotateCcw/> Reset</button></div></div></div>}
+function SettingsPage({data,update,drive,saveDrive,loadDrive,syncDrive,testDrive,reconnectDrive,exportJson,importJson,manualDriveBackup,resolveConflictKeepCloud,resolveConflictKeepLocal}){const p=data.profile,setP=(k,v)=>update('profile',{...p,[k]:v});return <div className="settings-grid"><div className="card form-card"><CardTitle title="Profile & GBT Target" icon={<Settings/>}/><Field label="Name"><input value={p.name} onChange={e=>setP('name',e.target.value)}/></Field><Field label="Tagline"><input value={p.tagline} onChange={e=>setP('tagline',e.target.value)}/></Field><div className="form-grid"><Field label="Tarikh mula PhD"><input type="date" value={p.startDate} onChange={e=>setP('startDate',e.target.value)}/></Field><Field label="Target GBT"><input type="date" value={p.targetDate} onChange={e=>setP('targetDate',e.target.value)}/></Field><Field label="Draft semasa"><input type="number" value={p.currentDraft} onChange={e=>setP('currentDraft',+e.target.value)}/></Field><Field label="Sasaran draft"><input type="number" value={p.draftGoal} onChange={e=>setP('draftGoal',+e.target.value)}/></Field></div></div><div className="card form-card"><CardTitle title="Personal Google Drive" icon={<Cloud/>}/><div className={`connection ${drive.profile?'connected':''}`}><Cloud size={28}/><div><b>{drive.profile?`Disambung: ${drive.profile.email}`:'Belum disambung'}</b><small>{drive.lastSync?`Sync terakhir ${drive.lastSync}${drive.lastDevice?` • cloud terakhir: ${drive.lastDevice}`:''}`:'Sambungkan akaun Google yang sama pada PC dan telefon.'}</small></div></div><Field label="Nama device ini"><input defaultValue={getDeviceName()} onBlur={e=>{const v=e.target.value.trim()||getDeviceName();localStorage.setItem(DEVICE_NAME_KEY,v)}} placeholder="Contoh: Surface, PC Office, Phone"/></Field>{drive.conflict&&<div className="sync-conflict-box"><b>Sync Conflict</b><p>Cloud berubah pada device lain ketika device ini juga ada perubahan. Auto overwrite telah dihentikan.</p><div className="button-row"><button className="secondary" onClick={()=>resolveConflictKeepCloud()}>Use Cloud Latest</button><button className="danger-btn" onClick={()=>resolveConflictKeepLocal()}>Keep This Device</button></div></div>}<div className="drive-diagnostics"><div><span>Scopes appData + media</span><b className={drive.scopeOk?'diag-ok':'diag-warn'}>{drive.scopeOk?'OK':'Belum disahkan'}</b></div><div><span>Google Drive API</span><b className={drive.apiOk?'diag-ok':'diag-warn'}>{drive.apiOk?'OK':'Belum diuji'}</b></div><div><span>Fail cloud</span><b>{drive.fileStatus}</b></div>{drive.lastError&&<div className="diag-error"><span>Ralat terakhir</span><b>{drive.lastError}</b></div>}</div><div className="button-row"><button className="primary" onClick={()=>syncDrive()}><Cloud/> Smart Sync</button><button className="secondary" onClick={()=>testDrive()}><Database/> Uji Drive</button><button className="secondary" onClick={()=>reconnectDrive()}><RotateCcw/> Reconnect</button><button className="secondary" onClick={()=>saveDrive()}><CloudUpload/> Paksa Simpan</button><button className="secondary" onClick={()=>loadDrive()}><CloudDownload/> Paksa Muat Turun</button></div><p className="hint"><b>Uji Drive</b> semak data tersembunyi dan folder media. v35.2 menggunakan <code>drive.appdata</code> untuk database serta <code>drive.file</code> untuk folder <b>My Drive → strategiSK</b>. Smart Sync: jika device berubah, perubahan dihantar ke Drive; jika device tidak berubah, data terbaru Drive dimuat turun. Selepas naik taraf, tambah kedua-dua scope dalam Google Auth Platform → Data Access dan tekan <b>Reconnect</b> sekali. Origin semasa: <code>{window.location.origin}</code></p></div><div className="card form-card storage-card"><CardTitle title="Safe Storage Architecture — v35.2" icon={<Database/>}/><p className="hint">Database teks kekal di <b>appDataFolder</b>. Gambar dan sketch dipindahkan semasa sync ke folder biasa dalam My Drive.</p><div className="storage-tree"><code>strategiSK/</code><code>├─ diary/</code><code>├─ learning-point/</code><code>├─ learning-files/</code><code>├─ thesis-drafts/</code><code>├─ consultation/</code><code>├─ experts/</code><code>├─ sketches/</code><code>└─ backups/</code></div><p className="hint">Schema data semasa: <b>v{data.schemaVersion||SCHEMA_VERSION}</b>. Data versi lama dimigrate tanpa reset.</p></div><div className="card form-card"><CardTitle title="FOW & FOD Recipients" icon={<Send/>}/><Field label="Nombor WhatsApp SV / CRMP (format 6012...)"><input value={p.whatsapp} onChange={e=>setP('whatsapp',e.target.value)} placeholder="60123456789"/></Field><Field label="Telegram Chat ID"><input value={p.telegramChatId} onChange={e=>setP('telegramChatId',e.target.value)} placeholder="123456789"/></Field><p className="hint">Butang hantar terletak terus dalam bahagian FOW dan FOD.</p></div><div className="card form-card"><CardTitle title="Display & Backup" icon={<Download/>}/><label className="check-card"><input type="checkbox" checked={data.settings.compact} onChange={e=>update('settings',{...data.settings,compact:e.target.checked})}/><span><b>Compact dashboard</b><small>Kurangkan jarak kad untuk skrin kecil.</small></span></label><label className="check-card"><input type="checkbox" checked={data.settings.showGraphics} onChange={e=>update('settings',{...data.settings,showGraphics:e.target.checked})}/><span><b>Elemen grafik</b><small>Papar chart dan ilustrasi.</small></span></label><label className="check-card"><input type="checkbox" checked={data.settings.autoSync!==false} onChange={e=>update('settings',{...data.settings,autoSync:e.target.checked})}/><span><b>Multi-Device Safe Sync</b><small>Auto-save local serta-merta, cuba sync selepas ±25 saat idle, semak semula cloud setiap 5 minit dan apabila app kembali aktif. Jika cloud berubah pada device lain, overwrite dihentikan dan Conflict dipaparkan.</small></span></label><div className="button-row"><button className="secondary" onClick={exportJson}><Download/> Export JSON</button><button className="secondary" onClick={()=>manualDriveBackup()}><CloudUpload/> Snapshot Drive</button><label className="secondary file-button"><Upload/> Import JSON<input type="file" accept="application/json" onChange={importJson}/></label><button className="danger-btn" onClick={()=>{if(confirm('Reset semua data?')){localStorage.removeItem(APP_KEY);location.reload()}}}><RotateCcw/> Reset</button></div></div></div>}
 
 function TaskModal({update,close}){const[x,setX]=useState({title:'',date:iso(),category:'Thesis'});return <Modal title="Tambah Tugasan" onClose={close}><Field label="Tugasan"><input autoFocus value={x.title} onChange={e=>setX({...x,title:e.target.value})}/></Field><Field label="Tarikh"><input type="date" value={x.date} onChange={e=>setX({...x,date:e.target.value})}/></Field><Field label="Kategori"><input value={x.category} onChange={e=>setX({...x,category:e.target.value})}/></Field><button className="primary full" onClick={()=>{if(x.title.trim())update('tasks',xs=>[...xs,{...x,id:uid(),done:false}]);close()}}><Save/> Simpan</button></Modal>}
 function EventModal({update,close,initialDate=iso()}){const[x,setX]=useState({title:'',date:initialDate,start:'09:00',end:'10:00'});return <Modal title="Tambah Aktiviti Kalendar" onClose={close}><Field label="Aktiviti"><input autoFocus value={x.title} onChange={e=>setX({...x,title:e.target.value})}/></Field><Field label="Tarikh"><input type="date" value={x.date} onChange={e=>setX({...x,date:e.target.value})}/></Field><div className="form-grid"><Field label="Mula"><input type="time" value={x.start} onChange={e=>setX({...x,start:e.target.value})}/></Field><Field label="Tamat"><input type="time" value={x.end} onChange={e=>setX({...x,end:e.target.value})}/></Field></div><button className="primary full" onClick={()=>{if(x.title.trim())update('events',xs=>[...xs,{...x,id:uid()}]);close()}}><Save/> Simpan</button></Modal>}

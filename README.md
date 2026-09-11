@@ -1,3 +1,18 @@
+# strategiSK v35.2 — Multi-Device Safe Sync
+
+- Local autosave immediately.
+- Idle sync after about 25 seconds when connected.
+- Cloud refresh/check every 5 minutes and on app focus/visibility return.
+- Cloud revision ID + device identity stored in metadata.
+- Pull-before-push protection.
+- If cloud changed while local edits exist, sync stops with Conflict instead of overwriting.
+- Conflict resolution: Use Cloud Latest or Keep This Device; safety backup created first.
+- Pending change counter shown in the top sync button.
+
+strategiSK v35.0
+
+strategiSK v34.9.1
+
 # strategiSK PhD OS v34.9
 
 ## v34.9 — Draft 111 mobile readability
@@ -81,8 +96,3 @@ Do not commit node_modules or local .env files.
 - Diary label input splits comma-separated text into separate labels (e.g. `thesis, progress, hlp`).
 - Existing single-image diary/SV records are migrated automatically to the multi-image structure. Schema version 6.
 - Expert List image frame is 4:3 while keeping fixed-frame cover behaviour.
-
-
-## v34.9.1 patch
-- Diary and Monthly Timeline images now use transparent full-image presentation without extra side fill on portrait images.
-- Expert List restores full-view image display on desktop while keeping fixed framed view on phone.

@@ -1,3 +1,12 @@
+# strategiSK v35.3 — Drive Recovery & Repair
+
+- Detect duplicate strategiSK root folders.
+- Lock one canonical root for future uploads.
+- Scan all learning-point folders for orphan images.
+- Recover selected orphan images into Learning Points grouped by capture/upload date.
+- Compare latest Learning media and latest visible backup timestamps.
+- Keeps v35.2 multi-device conflict protection.
+
 # strategiSK v35.2 — Multi-Device Safe Sync
 
 - Local autosave immediately.

@@ -132,3 +132,12 @@ Do not commit node_modules or local .env files.
 - SV Consultation desktop layout refined to avoid overlap on narrower desktop widths.
 - Consultation typography enlarged for clearer reading, closer to Learning Point.
 - Consultation image panel now reflows more neatly under medium desktop widths.
+
+
+## v35.7 — Fast Media Engine
+- True cache-first image loading: fresh IndexedDB cache is used without re-downloading from Drive.
+- Seven-day media cache freshness window.
+- Lazy loading near viewport to avoid fetching every SV Consultation image at once.
+- Drive media downloads limited to three concurrent requests.
+- In-memory object URL cache makes repeat views within the same session nearly instant.
+- Existing Drive, recovery, sync, and media upload behavior preserved.

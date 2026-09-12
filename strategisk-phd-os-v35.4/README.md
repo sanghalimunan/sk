@@ -1,9 +1,3 @@
-strategiSK v35.5
-
-strategiSK v35.5
-
-Minor spacing refinement for SV Consultation desktop/mobile layout.
-
 strategiSK v35.4 — Persistent Media Cache
 
 - IndexedDB local image cache per device
@@ -121,8 +115,3 @@ Do not commit node_modules or local .env files.
 - Diary label input splits comma-separated text into separate labels (e.g. `thesis, progress, hlp`).
 - Existing single-image diary/SV records are migrated automatically to the multi-image structure. Schema version 6.
 - Expert List image frame is 4:3 while keeping fixed-frame cover behaviour.
-
-
-## v35.5
-- SV Consultation spacing tightened for a cleaner desktop layout.
-- Learning Point top section and actions now reflow more neatly on narrower desktop widths.

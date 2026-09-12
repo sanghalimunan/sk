@@ -126,3 +126,9 @@ Do not commit node_modules or local .env files.
 ## v35.5
 - SV Consultation spacing tightened for a cleaner desktop layout.
 - Learning Point top section and actions now reflow more neatly on narrower desktop widths.
+
+
+## v35.6
+- SV Consultation desktop layout refined to avoid overlap on narrower desktop widths.
+- Consultation typography enlarged for clearer reading, closer to Learning Point.
+- Consultation image panel now reflows more neatly under medium desktop widths.

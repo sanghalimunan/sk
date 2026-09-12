@@ -1214,3 +1214,43 @@ body{font-size:14px;line-height:1.45}
   .consultation-main-row{grid-template-columns:1fr!important}
   .consultation-photo-box{max-width:none!important}
 }
+
+
+/* v35.6 consultation readability + cleaner desktop reflow */
+.consultation-card{overflow:hidden!important}
+.consultation-card input,
+.consultation-card select,
+.consultation-card textarea{font-size:15px!important;line-height:1.58!important}
+.consultation-card h3{font-size:19px!important;line-height:1.25!important}
+.consultation-page .field label,
+.consultation-page .field .label{font-size:12px!important;font-weight:700!important;letter-spacing:.01em!important}
+.consultation-top-row{display:grid!important;grid-template-columns:160px minmax(0,1fr) 170px!important;gap:12px!important;align-items:end!important}
+.consultation-main-row{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(300px,360px)!important;gap:12px!important;align-items:start!important;margin:10px 0 12px!important}
+.consultation-main-row>.field,
+.consultation-main-row>.consultation-photo-box{min-width:0!important}
+.consultation-main-row textarea{min-height:188px!important;padding:14px 15px!important}
+.consultation-photo-box{width:100%!important;max-width:360px!important;justify-self:stretch!important;align-self:start!important;display:grid!important;gap:8px!important}
+.consultation-photo-box .media-slider{width:100%!important;max-width:none!important;border-radius:12px!important;overflow:hidden!important}
+.consultation-photo-box .media-slider-stage{padding:0!important}
+.consultation-photo-upload.empty{min-height:180px!important}
+.consultation-photo-upload.compact-add{min-height:46px!important;font-size:12px!important}
+.consultation-card>.field:last-child{margin-top:0!important}
+.consultation-card>.field:last-child textarea{min-height:150px!important;padding:14px 15px!important}
+
+@media (max-width: 1380px){
+  .consultation-top-row{grid-template-columns:145px minmax(0,1fr) 160px!important;gap:10px!important}
+  .consultation-main-row{grid-template-columns:minmax(0,1fr) minmax(260px,320px)!important;gap:10px!important}
+  .consultation-photo-box{max-width:320px!important}
+}
+@media (max-width: 1180px){
+  .consultation-top-row{grid-template-columns:1fr 1fr 160px!important}
+  .consultation-main-row{grid-template-columns:1fr!important;gap:10px!important}
+  .consultation-photo-box{max-width:none!important}
+}
+@media (max-width: 760px){
+  .consultation-card input,
+  .consultation-card select,
+  .consultation-card textarea{font-size:16px!important}
+  .consultation-top-row{grid-template-columns:1fr!important;gap:8px!important}
+  .consultation-main-row{grid-template-columns:1fr!important;gap:8px!important;margin:8px 0 10px!important}
+}

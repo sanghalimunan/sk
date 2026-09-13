@@ -1271,3 +1271,11 @@ body{font-size:14px;line-height:1.45}
 .consultation-save-btn,.expert-save-btn{padding:8px 12px!important;font-size:11px!important;box-shadow:none!important}
 .learning-title-actions .primary{min-width:84px;justify-content:center}
 @media(max-width:620px){.consultation-save-btn,.expert-save-btn{padding:8px 10px!important}.consultation-card-actions{gap:5px}}
+
+
+/* v35.9 adaptive pasted rich text */
+:root[data-theme="dark"] .rich-notes-editor,:root[data-theme="dark"] .rich-notes-editor *{color:var(--ink)!important}
+:root[data-theme="dark"] .rich-notes-editor *{background-color:transparent!important}
+:root[data-theme="dark"] .rich-notes-editor a{color:#ff77a8!important;text-decoration-color:#ff77a8!important}
+:root[data-theme="dark"] .rich-notes-editor th{background:var(--soft)!important}
+:root[data-theme="light"] .rich-notes-editor{color:var(--ink)!important}

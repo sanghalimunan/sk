@@ -20,6 +20,9 @@ const LAST_AUTO_SYNC_KEY = 'strategisk-last-auto-sync-at'
 const LOCAL_DIRTY_KEY = 'strategisk-local-dirty'
 const LAST_CLOUD_SEEN_KEY = 'strategisk-last-cloud-seen-at'
 const LAST_CLOUD_REVISION_KEY = 'strategisk-last-cloud-revision'
+const LOCAL_CHANGE_SEQ_KEY = 'strategisk-local-change-seq'
+const LAST_SYNCED_SEQ_KEY = 'strategisk-last-synced-seq'
+const LOCAL_RECOVERY_KEY = 'strategisk-local-recovery-before-cloud'
 const GOOGLE_REMEMBER_KEY = 'strategisk-google-remember'
 const DEVICE_ID_KEY = 'strategisk-device-id'
 const DEVICE_NAME_KEY = 'strategisk-device-name'
@@ -249,7 +252,19 @@ function sanitizeRichHtml(html=''){
   try{
     const doc=new DOMParser().parseFromString(`<div>${html}</div>`,'text/html')
     doc.querySelectorAll('script,style,iframe,object,embed').forEach(x=>x.remove())
-    doc.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(a=>{if(/^on/i.test(a.name))el.removeAttribute(a.name)}))
+    doc.querySelectorAll('*').forEach(el=>{
+      ;[...el.attributes].forEach(a=>{
+        if(/^on/i.test(a.name)){el.removeAttribute(a.name);return}
+        if(/^(color|bgcolor)$/i.test(a.name)){el.removeAttribute(a.name);return}
+        if(a.name.toLowerCase()==='style'){
+          const cleaned=a.value
+            .replace(/(?:^|;)\s*color\s*:[^;]*/gi,'')
+            .replace(/(?:^|;)\s*background(?:-color)?\s*:[^;]*/gi,'')
+            .replace(/^\s*;|;\s*$/g,'').trim()
+          if(cleaned)el.setAttribute('style',cleaned);else el.removeAttribute('style')
+        }
+      })
+    })
     return doc.body.firstElementChild?.innerHTML||''
   }catch{return escapeHtml(String(html||''))}
 }
@@ -370,7 +385,7 @@ function App() {
   const [modal,setModal]=useState(null), [editingDraft,setEditingDraft]=useState(null), [toast,setToast]=useState('')
   const [drive,setDrive]=useState({token:'',fileId:'',profile:null,syncing:false,lastSync:'',scopeOk:false,apiOk:false,fileStatus:'Belum diperiksa',lastError:'',grantedScopes:'',conflict:false,pendingCount:Number(localStorage.getItem(PENDING_COUNT_KEY)||0),lastDevice:'',syncStatus:'idle'})
   const [recovery,setRecovery]=useState({scanning:false,roots:[],canonicalRootId:localStorage.getItem(CANONICAL_ROOT_KEY)||'',orphans:[],latestMedia:null,latestBackup:null,error:''})
-  const tokenClientRef=useRef(null), autoAuthTriedRef=useRef(false), idleSyncTimerRef=useRef(null), editingRef=useRef(false)
+  const tokenClientRef=useRef(null), autoAuthTriedRef=useRef(false), idleSyncTimerRef=useRef(null), editingRef=useRef(false), syncInFlightRef=useRef(false)
   useEffect(()=>localStorage.setItem(APP_KEY,JSON.stringify(data)),[data])
   useEffect(()=>{ if(toast){const t=setTimeout(()=>setToast(''),3000);return()=>clearTimeout(t)}},[toast])
   useEffect(()=>{document.documentElement.dataset.theme=data.settings.theme},[data.settings.theme])
@@ -394,9 +409,12 @@ function App() {
     window.addEventListener('focus',onVisible)
     return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('focus',onVisible)}
   },[data.settings.autoSync,drive.token,drive.profile?.email])
-  const markLocalChanged=()=>{const now=new Date().toISOString();const pending=Number(localStorage.getItem(PENDING_COUNT_KEY)||0)+1;localStorage.setItem(LOCAL_UPDATED_KEY,now);localStorage.setItem(LOCAL_DIRTY_KEY,'1');localStorage.setItem(PENDING_COUNT_KEY,String(pending));setDrive(x=>({...x,pendingCount:pending,syncStatus:x.conflict?'conflict':'pending'}))}
-  const localIsDirty=()=>localStorage.getItem(LOCAL_DIRTY_KEY)==='1'
-  const markCloudBaseline=(savedAt,revision='')=>{const stamp=savedAt||new Date().toISOString();localStorage.setItem(LOCAL_UPDATED_KEY,stamp);localStorage.setItem(LAST_CLOUD_SEEN_KEY,stamp);if(revision)localStorage.setItem(LAST_CLOUD_REVISION_KEY,revision);localStorage.setItem(LOCAL_DIRTY_KEY,'0');localStorage.setItem(PENDING_COUNT_KEY,'0');localStorage.setItem(LAST_AUTO_SYNC_KEY,String(Date.now()));setDrive(x=>({...x,pendingCount:0,conflict:false,syncStatus:'synced'}))}
+  const getLocalSeq=()=>Number(localStorage.getItem(LOCAL_CHANGE_SEQ_KEY)||0)
+  const getLastSyncedSeq=()=>Number(localStorage.getItem(LAST_SYNCED_SEQ_KEY)||0)
+  const markLocalChanged=()=>{const now=new Date().toISOString();const seq=getLocalSeq()+1;const pending=Number(localStorage.getItem(PENDING_COUNT_KEY)||0)+1;localStorage.setItem(LOCAL_CHANGE_SEQ_KEY,String(seq));localStorage.setItem(LOCAL_UPDATED_KEY,now);localStorage.setItem(LOCAL_DIRTY_KEY,'1');localStorage.setItem(PENDING_COUNT_KEY,String(pending));setDrive(x=>({...x,pendingCount:pending,syncStatus:x.conflict?'conflict':'pending'}))}
+  const localIsDirty=()=>localStorage.getItem(LOCAL_DIRTY_KEY)==='1'||getLocalSeq()>getLastSyncedSeq()
+  const saveRecoverySnapshot=(reason='before-cloud-pull')=>{try{localStorage.setItem(LOCAL_RECOVERY_KEY,JSON.stringify({reason,at:new Date().toISOString(),data:stripLocalMedia(data)}))}catch{}}
+  const markCloudBaseline=(savedAt,revision='',opts={})=>{const stamp=savedAt||new Date().toISOString();const syncedSeq=Number.isFinite(opts.syncedSeq)?opts.syncedSeq:getLocalSeq();const canClear=opts.clearDirty!==false&&getLocalSeq()===syncedSeq;localStorage.setItem(LOCAL_UPDATED_KEY,stamp);localStorage.setItem(LAST_CLOUD_SEEN_KEY,stamp);if(revision)localStorage.setItem(LAST_CLOUD_REVISION_KEY,revision);localStorage.setItem(LAST_SYNCED_SEQ_KEY,String(syncedSeq));localStorage.setItem(LAST_AUTO_SYNC_KEY,String(Date.now()));if(canClear){localStorage.setItem(LOCAL_DIRTY_KEY,'0');localStorage.setItem(PENDING_COUNT_KEY,'0');setDrive(x=>({...x,pendingCount:0,conflict:false,syncStatus:'synced'}))}else{localStorage.setItem(LOCAL_DIRTY_KEY,'1');const pending=Math.max(1,Number(localStorage.getItem(PENDING_COUNT_KEY)||1));localStorage.setItem(PENDING_COUNT_KEY,String(pending));setDrive(x=>({...x,pendingCount:pending,syncStatus:x.conflict?'conflict':'pending'}))}}
   const scheduleIdleSync=()=>{if(idleSyncTimerRef.current)clearTimeout(idleSyncTimerRef.current);idleSyncTimerRef.current=setTimeout(()=>{if(editingRef.current){scheduleIdleSync();return}if(data.settings.autoSync&&drive.token&&drive.profile&&!drive.syncing)syncDrive(drive.token,true)},IDLE_SYNC_MS)}
   const update=(key,value)=>{markLocalChanged();setData(d=>({...d,[key]:typeof value==='function'?value(d[key]):value}));scheduleIdleSync()}
   const saveLocalNow=(label='Changes')=>{try{if(idleSyncTimerRef.current)clearTimeout(idleSyncTimerRef.current);localStorage.setItem(APP_KEY,JSON.stringify(data));showToast(`${label} saved on this device. Cloud sync will run safely after editing.`);setTimeout(()=>scheduleIdleSync(),800)}catch{showToast('Local save failed.')}}
@@ -653,9 +671,10 @@ function App() {
         return
       }
       if(!quiet)showToast('Drive OK. Mengambil data terkini dari Google Drive...')
+      saveRecoverySnapshot('auto-auth-before-cloud-pull')
       delete remote.meta
       setData(migrate(remote))
-      markCloudBaseline(savedAt,revision)
+      markCloudBaseline(savedAt,revision,{syncedSeq:getLocalSeq()})
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
       if(!quiet)showToast('Data terkini Google Drive berjaya dimuatkan ke peranti ini.')
     }catch(e){
@@ -684,8 +703,10 @@ function App() {
     if(!token)return initGoogleClient(saveDrive,true)
     setDrive(x=>({...x,syncing:true}))
     try{
-      const existing=await findDriveFile(token),result=await uploadDriveData(token,existing)
-      markCloudBaseline(result.savedAt,result.revision)
+      const syncStartSeq=getLocalSeq(),existing=await findDriveFile(token),result=await uploadDriveData(token,existing)
+      const unchanged=getLocalSeq()===syncStartSeq
+      markCloudBaseline(result.savedAt,result.revision,{syncedSeq:syncStartSeq,clearDirty:unchanged})
+      if(!unchanged)setTimeout(()=>scheduleIdleSync(),500)
       setDrive(x=>({...x,fileId:result.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'})}))
       showToast('Data peranti ini berjaya disimpan ke Google Drive.')
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
@@ -699,8 +720,9 @@ function App() {
       if(!existing)throw new Error('Drive API OK tetapi fail strategiSK belum wujud. Gunakan Paksa Simpan hanya pada peranti yang memang mempunyai data utama.')
       const remote=await fetchRemoteData(token,existing),meta=remote.meta||{},savedAt=meta.savedAt||existing.modifiedTime,revision=meta.revision||''
       try{if(localIsDirty())await createVisibleBackup(token,data,'local-before-force-download')}catch{}
+      saveRecoverySnapshot('force-download-before-cloud-pull')
       delete remote.meta
-      setData(migrate(remote));markCloudBaseline(savedAt||new Date().toISOString(),revision)
+      setData(migrate(remote));markCloudBaseline(savedAt||new Date().toISOString(),revision,{syncedSeq:getLocalSeq()})
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
       showToast('Data Google Drive berjaya dimuatkan ke peranti ini.')
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
@@ -708,10 +730,13 @@ function App() {
   async function syncDrive(token=drive.token,quiet=false){
     if(token && typeof token !== 'string') token=drive.token
     if(!token)return initGoogleClient((fresh)=>syncDrive(fresh,quiet),false)
+    if(syncInFlightRef.current)return
+    syncInFlightRef.current=true
+    const syncStartSeq=getLocalSeq()
     setDrive(x=>({...x,syncing:true,lastError:''}))
     try{
       const existing=await findDriveFile(token)
-      const dirty=localIsDirty()
+      const dirty=localIsDirty()||getLocalSeq()>getLastSyncedSeq()
       if(!existing){
         if(!dirty){
           setDrive(x=>({...x,syncing:false,apiOk:true,fileStatus:'Drive OK — data belum wujud'}))
@@ -719,7 +744,9 @@ function App() {
           return
         }
         const result=await uploadDriveData(token)
-        markCloudBaseline(result.savedAt,result.revision)
+        const unchanged=getLocalSeq()===syncStartSeq
+        markCloudBaseline(result.savedAt,result.revision,{syncedSeq:syncStartSeq,clearDirty:unchanged})
+        if(!unchanged)setTimeout(()=>scheduleIdleSync(),500)
         setDrive(x=>({...x,fileId:result.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail dicipta: ${DRIVE_FILE}`}))
         if(!quiet)showToast('Perubahan device disimpan sebagai data cloud pertama.')
         return
@@ -740,26 +767,36 @@ function App() {
           return
         }
         const result=await uploadDriveData(token,existing,{backup:false})
-        markCloudBaseline(result.savedAt,result.revision)
-        if(!quiet)showToast('Perubahan terbaru device berjaya disimpan ke Google Drive.')
+        const unchanged=getLocalSeq()===syncStartSeq
+        markCloudBaseline(result.savedAt,result.revision,{syncedSeq:syncStartSeq,clearDirty:unchanged})
+        if(!unchanged){setTimeout(()=>scheduleIdleSync(),500);if(!quiet)showToast('Ada edit baru semasa sync. Data tidak dibuang; sync susulan dijadualkan.')}else if(!quiet)showToast('Perubahan terbaru device berjaya disimpan ke Google Drive.')
       }else{
+        if(getLocalSeq()>getLastSyncedSeq()){
+          localStorage.setItem(LOCAL_DIRTY_KEY,'1')
+          setDrive(x=>({...x,syncing:false,syncStatus:'pending'}))
+          setTimeout(()=>scheduleIdleSync(),500)
+          if(!quiet)showToast('Perubahan local dikesan. Cloud tidak dibenarkan menindih data baru.')
+          return
+        }
+        saveRecoverySnapshot('sync-before-cloud-pull')
         delete remote.meta
         setData(migrate(remote))
-        markCloudBaseline(remoteSavedAt,remoteRevision)
+        markCloudBaseline(remoteSavedAt,remoteRevision,{syncedSeq:getLocalSeq()})
         setDrive(x=>({...x,lastDevice:remoteDevice}))
         if(!quiet)showToast(remoteTime>baselineTime?'Data terbaru dari Google Drive dimuatkan ke device.':'Device sudah menggunakan data cloud terkini.')
       }
       setDrive(x=>({...x,fileId:existing.id,syncing:false,lastSync:new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}),apiOk:true,fileStatus:`Fail ditemui: ${DRIVE_FILE}`,lastError:''}))
     }catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));if(!quiet)showToast(e.message)}
+    finally{syncInFlightRef.current=false}
   }
 
   async function resolveConflictKeepCloud(token=drive.token){
     if(!token)return initGoogleClient(resolveConflictKeepCloud,false)
-    try{setDrive(x=>({...x,syncing:true}));const existing=await findDriveFile(token);if(!existing)throw new Error('Data cloud tidak ditemui.');try{await createVisibleBackup(token,data,'conflict-local-before-cloud')}catch{};const remote=await fetchRemoteData(token,existing),meta=remote.meta||{};delete remote.meta;setData(migrate(remote));markCloudBaseline(meta.savedAt||existing.modifiedTime||new Date().toISOString(),meta.revision||'');setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:meta.deviceName||'',fileStatus:'Conflict selesai — cloud digunakan'}));showToast('Conflict selesai: data cloud terbaru digunakan. Salinan local dibuat sebagai backup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
+    try{setDrive(x=>({...x,syncing:true}));const existing=await findDriveFile(token);if(!existing)throw new Error('Data cloud tidak ditemui.');try{await createVisibleBackup(token,data,'conflict-local-before-cloud')}catch{};const remote=await fetchRemoteData(token,existing),meta=remote.meta||{};saveRecoverySnapshot('conflict-before-cloud-pull');delete remote.meta;setData(migrate(remote));markCloudBaseline(meta.savedAt||existing.modifiedTime||new Date().toISOString(),meta.revision||'');setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:meta.deviceName||'',fileStatus:'Conflict selesai — cloud digunakan'}));showToast('Conflict selesai: data cloud terbaru digunakan. Salinan local dibuat sebagai backup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
   }
   async function resolveConflictKeepLocal(token=drive.token){
     if(!token)return initGoogleClient(resolveConflictKeepLocal,false)
-    try{setDrive(x=>({...x,syncing:true}));const existing=await findDriveFile(token);if(existing){try{const remote=await fetchRemoteData(token,existing);await createVisibleBackup(token,remote,'conflict-cloud-before-local')}catch{}}const result=await uploadDriveData(token,existing,{backup:false});markCloudBaseline(result.savedAt,result.revision);setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:getDeviceName(),fileStatus:'Conflict selesai — device ini digunakan'}));showToast('Conflict selesai: perubahan device ini disimpan. Versi cloud lama dibackup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
+    try{setDrive(x=>({...x,syncing:true}));const syncStartSeq=getLocalSeq(),existing=await findDriveFile(token);if(existing){try{const remote=await fetchRemoteData(token,existing);await createVisibleBackup(token,remote,'conflict-cloud-before-local')}catch{}}const result=await uploadDriveData(token,existing,{backup:false});const unchanged=getLocalSeq()===syncStartSeq;markCloudBaseline(result.savedAt,result.revision,{syncedSeq:syncStartSeq,clearDirty:unchanged});if(!unchanged)setTimeout(()=>scheduleIdleSync(),500);setDrive(x=>({...x,syncing:false,conflict:false,lastDevice:getDeviceName(),fileStatus:'Conflict selesai — device ini digunakan'}));showToast('Conflict selesai: perubahan device ini disimpan. Versi cloud lama dibackup.')}catch(e){setDrive(x=>({...x,syncing:false,lastError:e.message}));showToast(e.message)}
   }
 
   async function manualDriveBackup(token=drive.token){

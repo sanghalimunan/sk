@@ -165,3 +165,11 @@ Do not commit node_modules or local .env files.
 - Pending SV images remain as local data URLs until Save, so they display immediately and cannot vanish during an in-progress edit.
 - Auto-auth, force download and manual cloud sync are also blocked while a Local Draft is unsaved.
 - Local drafts persist in browser storage across refresh/reopen until saved.
+
+
+## v36.1 — Draft 111 Safe Files & Reorder
+- Draft Word files are now staged locally in IndexedDB first; they are uploaded to Drive only after Save.
+- Latest JSON and file reference are committed together during safe sync.
+- Added remove/replace thesis file controls.
+- Added drag-and-drop plus Up/Down ordering for draft records.
+- Strengthened atomic local persistence with a live data reference to prevent stale autosync snapshots.

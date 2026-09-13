@@ -1279,3 +1279,9 @@ body{font-size:14px;line-height:1.45}
 :root[data-theme="dark"] .rich-notes-editor a{color:#ff77a8!important;text-decoration-color:#ff77a8!important}
 :root[data-theme="dark"] .rich-notes-editor th{background:var(--soft)!important}
 :root[data-theme="light"] .rich-notes-editor{color:var(--ink)!important}
+
+
+/* v36.0 local-draft visual polish */
+.drive-button span{white-space:nowrap}
+.consultation-save-btn,.expert-save-btn,.learning-title-actions .primary{box-shadow:0 7px 18px #c9004522}
+@media(max-width:620px){.drive-button span{max-width:92px;overflow:hidden;text-overflow:ellipsis}}

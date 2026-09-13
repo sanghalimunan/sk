@@ -156,3 +156,12 @@ Do not commit node_modules or local .env files.
 - If edits happen during upload, local data remains Pending and a follow-up sync is scheduled instead of clearing the dirty state.
 - Saves a local recovery snapshot before any cloud pull.
 - Learning Point pasted text now adapts to dark mode; pasted black/font background colors are stripped while structure such as tables/lists remains.
+
+
+## v36.0 — Local Draft First
+- Learning Point, SV Consultation and Expert List edit locally first.
+- Google Drive sync is blocked while an unsaved Local Draft exists.
+- Press Save to commit the draft, then safe cloud sync can run.
+- Pending SV images remain as local data URLs until Save, so they display immediately and cannot vanish during an in-progress edit.
+- Auto-auth, force download and manual cloud sync are also blocked while a Local Draft is unsaved.
+- Local drafts persist in browser storage across refresh/reopen until saved.

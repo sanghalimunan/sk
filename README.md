@@ -141,3 +141,10 @@ Do not commit node_modules or local .env files.
 - Drive media downloads limited to three concurrent requests.
 - In-memory object URL cache makes repeat views within the same session nearly instant.
 - Existing Drive, recovery, sync, and media upload behavior preserved.
+
+
+## v35.8 — Edit-Safe Save
+- Added explicit Save buttons to Learning Point, SV Consultation and Expert List.
+- Auto sync is paused while typing/editing fields and resumes after focus leaves the editor.
+- Learning Point / SV / Expert image uploads first persist current local edits.
+- First visible SV consultation images are requested eagerly while the media queue still limits concurrent Drive downloads.

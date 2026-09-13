@@ -1264,3 +1264,10 @@ body{font-size:14px;line-height:1.45}
 .learning-image-row .media-image-shell{width:100%}
 .media-placeholder.media-loading{animation:mediaPulse 1.2s ease-in-out infinite alternate}
 @keyframes mediaPulse{from{opacity:.62}to{opacity:1}}
+
+
+/* v35.8 explicit save controls + edit-safe sync */
+.consultation-card-actions{display:flex;align-items:center;gap:8px}
+.consultation-save-btn,.expert-save-btn{padding:8px 12px!important;font-size:11px!important;box-shadow:none!important}
+.learning-title-actions .primary{min-width:84px;justify-content:center}
+@media(max-width:620px){.consultation-save-btn,.expert-save-btn{padding:8px 10px!important}.consultation-card-actions{gap:5px}}

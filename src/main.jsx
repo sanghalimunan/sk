@@ -1127,3 +1127,36 @@ function DraftModal({data,update,initial,close}){const[x,setX]=useState(initial|
 function ProgressModal({data,gbtProgress,draftProgress,targetDays,close}){return <Modal title="Butiran Progress GBT" onClose={close} wide><div className="progress-overview"><Ring value={gbtProgress} label="GBT" size={150}/><Ring value={draftProgress} label="Draft 111" size={150}/><div className="big-number"><strong>{targetDays}</strong><span>hari berbaki</span></div></div><ProgressList items={data.chapters}/></Modal>}
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><App/></React.StrictMode>)
+
+// v36.2 — restored Manage Targets modal (accidentally omitted in v36.1)
+function CountdownModal({data,update,close}){
+  const [x,setX]=useState({label:'',date:addDays(7),type:'short'})
+  const addTarget=()=>{
+    const label=(x.label||'').trim()
+    if(!label)return
+    update('countdowns',xs=>[...xs,{...x,label,id:uid()}])
+    setX({label:'',date:addDays(7),type:'short'})
+  }
+  return <Modal title="Urus Days Remaining" onClose={close} wide>
+    <div className="countdown-manage">
+      {data.countdowns.map(c=><div key={c.id}>
+        <input value={c.label} aria-label="Nama sasaran" onChange={e=>update('countdowns',xs=>xs.map(i=>i.id===c.id?{...i,label:e.target.value}:i))}/>
+        <input type="date" value={c.date} aria-label="Tarikh sasaran" onChange={e=>update('countdowns',xs=>xs.map(i=>i.id===c.id?{...i,date:e.target.value}:i))}/>
+        <select value={c.type} aria-label="Jenis sasaran" onChange={e=>update('countdowns',xs=>xs.map(i=>i.id===c.id?{...i,type:e.target.value}:i))}>
+          <option value="short">Short term</option><option value="mid">Mid term</option>
+        </select>
+        <b>{daysBetween(c.date)} hari</b>
+        <button className="icon-btn danger" title="Padam sasaran" aria-label="Padam sasaran" onClick={()=>update('countdowns',xs=>xs.filter(i=>i.id!==c.id))}><Trash2 size={17}/></button>
+      </div>)}
+      {!data.countdowns.length&&<p className="muted countdown-empty">Belum ada sasaran tambahan.</p>}
+    </div>
+    <div className="countdown-divider"/>
+    <div className="countdown-add">
+      <input placeholder="Nama sasaran" value={x.label} onChange={e=>setX({...x,label:e.target.value})} onKeyDown={e=>{if(e.key==='Enter')addTarget()}}/>
+      <input type="date" value={x.date} onChange={e=>setX({...x,date:e.target.value})}/>
+      <select value={x.type} onChange={e=>setX({...x,type:e.target.value})}><option value="short">Short term</option><option value="mid">Mid term</option></select>
+      <button className="primary" onClick={addTarget}><Plus size={16}/> Tambah</button>
+    </div>
+    <div className="modal-actions countdown-modal-actions"><span className="muted">Perubahan disimpan secara local dahulu mengikut sistem v36.</span><button className="secondary" onClick={close}>Tutup</button></div>
+  </Modal>
+}

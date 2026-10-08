@@ -1290,3 +1290,26 @@ body{font-size:14px;line-height:1.45}
 /* v36.1 — Draft 111 local-first file safety + reorder controls */
 .draft-head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.draft-history-head{align-items:flex-end!important}.draft-history-head .muted{margin:5px 0 0;max-width:760px}.draft-order-controls{display:flex;align-items:center;gap:3px;white-space:nowrap}.draft-order-controls .icon-btn{width:30px;height:30px;font-weight:900}.draft-order-controls button:disabled,.draft-mobile-order button:disabled{opacity:.28;cursor:not-allowed}.draft-grip{font-size:18px;letter-spacing:-4px;color:var(--muted);padding-right:5px;cursor:grab}.draft-history-table tr[draggable=true]{transition:opacity .15s,background .15s}.draft-history-table tr[draggable=true]:hover{background:var(--soft)}.draft-dragging{opacity:.55}.draft-file-actions{display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important}.draft-file-actions small{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.draft-file-delete{width:30px!important;height:30px!important}.draft-file-actions .soft-btn:disabled{opacity:.72;cursor:default}.draft-bottom-save{display:flex;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--line);margin-top:12px}.draft-mobile-order{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 15px 12px}.draft-mobile-order button{justify-content:center}.draft-history-table th:first-child{width:105px}
 @media(max-width:760px){.draft-head-actions{width:100%}.draft-head-actions>*{flex:1;justify-content:center}.draft-bottom-save .primary{width:100%;justify-content:center}.draft-file-actions small{max-width:170px}}
+
+/* v36.2 — Manage Targets modal repair */
+.countdown-divider{height:1px;background:var(--line);margin:16px 0}
+.countdown-empty{padding:14px 4px;margin:0}
+.countdown-modal-actions{align-items:center}
+.countdown-modal-actions .muted{font-size:10px}
+@media(max-width:760px){
+  .countdown-manage>div{grid-template-columns:minmax(0,1fr) minmax(125px,.8fr)!important;gap:8px!important;padding:10px 0!important;border-bottom:1px solid var(--line)!important}
+  .countdown-manage>div>select{grid-column:1/2!important}
+  .countdown-manage>div>b{grid-column:2/3!important;grid-row:2!important;align-self:center!important;text-align:right!important;padding-right:6px!important}
+  .countdown-manage>div>.icon-btn{grid-column:2/3!important;grid-row:3!important;justify-self:end!important}
+  .countdown-add{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .countdown-add>select{grid-column:1/2!important}
+  .countdown-add>.primary{grid-column:2/3!important;width:100%!important;justify-content:center!important}
+  .countdown-modal-actions{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+  .countdown-modal-actions .secondary{width:100%!important;justify-content:center!important}
+}
+@media(max-width:460px){
+  .countdown-manage>div,.countdown-add{grid-template-columns:1fr!important}
+  .countdown-manage>div>select,.countdown-manage>div>b,.countdown-manage>div>.icon-btn,.countdown-add>select,.countdown-add>.primary{grid-column:1!important;grid-row:auto!important}
+  .countdown-manage>div>b{text-align:left!important}
+  .countdown-manage>div>.icon-btn{justify-self:end!important}
+}

@@ -173,3 +173,9 @@ Do not commit node_modules or local .env files.
 - Added remove/replace thesis file controls.
 - Added drag-and-drop plus Up/Down ordering for draft records.
 - Strengthened atomic local persistence with a live data reference to prevent stale autosync snapshots.
+
+
+## v36.2
+- Restored the missing Manage Targets / Days Remaining modal.
+- Fixed the black-overlay-only failure on desktop and phone.
+- Improved target editor responsiveness for smaller screens.

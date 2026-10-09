@@ -184,3 +184,9 @@ Do not commit node_modules or local .env files.
 ## v36.3
 - Restored missing Edit Timeline modal.
 - Timeline phases can now be edited, added, deleted, and moved up/down on desktop and phone.
+
+
+## v36.4
+- SV Consultation now automatically displays newest consultation date first and oldest last.
+- Changing a consultation date immediately re-sorts the cards without changing the saved record itself.
+- Entries without a date are kept at the bottom.

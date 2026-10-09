@@ -190,3 +190,7 @@ Do not commit node_modules or local .env files.
 - SV Consultation now automatically displays newest consultation date first and oldest last.
 - Changing a consultation date immediately re-sorts the cards without changing the saved record itself.
 - Entries without a date are kept at the bottom.
+
+
+## v36.5
+- SV Consultation numbering now follows chronology: oldest record is Consultation 01 at the bottom; newest record appears at the top with the highest consultation number.

@@ -179,3 +179,8 @@ Do not commit node_modules or local .env files.
 - Restored the missing Manage Targets / Days Remaining modal.
 - Fixed the black-overlay-only failure on desktop and phone.
 - Improved target editor responsiveness for smaller screens.
+
+
+## v36.3
+- Restored missing Edit Timeline modal.
+- Timeline phases can now be edited, added, deleted, and moved up/down on desktop and phone.

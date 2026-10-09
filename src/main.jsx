@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
-  BarChart3, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, CircleUserRound,
+  BarChart3, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, CircleUserRound,
   Cloud, CloudDownload, CloudUpload, Copy, Database, Edit3, FileImage, FileText, Flag,
   Gauge, GraduationCap, Home, ImagePlus, LineChart, ListChecks, Menu, MessageCircle, Moon,
   Plus, Rocket, Save, Send, Settings, Sparkles, Sun, Target, Trash2, Trophy, Users, X,
@@ -1158,5 +1158,32 @@ function CountdownModal({data,update,close}){
       <button className="primary" onClick={addTarget}><Plus size={16}/> Tambah</button>
     </div>
     <div className="modal-actions countdown-modal-actions"><span className="muted">Perubahan disimpan secara local dahulu mengikut sistem v36.</span><button className="secondary" onClick={close}>Tutup</button></div>
+  </Modal>
+}
+
+
+// v36.3 — restored Edit Timeline modal
+function TimelineModal({data,update,close}){
+  const rows=data.timeline||[]
+  const patch=(id,key,value)=>update('timeline',xs=>xs.map(i=>i.id===id?{...i,[key]:value}:i))
+  const addRow=()=>update('timeline',xs=>[...xs,{id:uid(),name:'Fasa baharu',startMonth:0,duration:3,progress:0}])
+  const remove=id=>update('timeline',xs=>xs.filter(i=>i.id!==id))
+  const move=(id,dir)=>update('timeline',xs=>{const arr=[...xs],idx=arr.findIndex(i=>i.id===id),to=idx+dir;if(idx<0||to<0||to>=arr.length)return xs;[arr[idx],arr[to]]=[arr[to],arr[idx]];return arr})
+  return <Modal title="Edit 2.5-Year Gantt Timeline" onClose={close} wide>
+    <div className="timeline-editor">
+      {rows.map((row,index)=><div className="timeline-edit-row" key={row.id}>
+        <div className="timeline-order">{index+1}</div>
+        <Field label="Fasa / Aktiviti"><input value={row.name} onChange={e=>patch(row.id,'name',e.target.value)}/></Field>
+        <Field label="Mula (bulan)"><input type="number" min="0" max="29" value={row.startMonth} onChange={e=>patch(row.id,'startMonth',Math.max(0,Math.min(29,+e.target.value||0)))}/></Field>
+        <Field label="Tempoh (bulan)"><input type="number" min="1" max="30" value={row.duration} onChange={e=>patch(row.id,'duration',Math.max(1,Math.min(30,+e.target.value||1)))}/></Field>
+        <Field label="Progress %"><input type="number" min="0" max="100" value={row.progress} onChange={e=>patch(row.id,'progress',Math.max(0,Math.min(100,+e.target.value||0)))}/></Field>
+        <div className="timeline-row-actions">
+          <button className="icon-btn" type="button" title="Move up" disabled={index===0} onClick={()=>move(row.id,-1)}><ChevronUp size={16}/></button>
+          <button className="icon-btn" type="button" title="Move down" disabled={index===rows.length-1} onClick={()=>move(row.id,1)}><ChevronDown size={16}/></button>
+          <button className="icon-btn danger timeline-row-delete" type="button" title="Delete phase" onClick={()=>remove(row.id)}><Trash2 size={16}/></button>
+        </div>
+      </div>)}
+    </div>
+    <div className="modal-actions timeline-modal-actions"><button className="secondary" onClick={addRow}><Plus size={16}/> Tambah Fasa</button><button className="primary" onClick={close}><Check size={16}/> Siap</button></div>
   </Modal>
 }

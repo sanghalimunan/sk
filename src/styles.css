@@ -1313,3 +1313,21 @@ body{font-size:14px;line-height:1.45}
   .countdown-manage>div>b{text-align:left!important}
   .countdown-manage>div>.icon-btn{justify-self:end!important}
 }
+
+
+/* v36.3 timeline modal repair */
+.timeline-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:4px;padding-bottom:7px}
+.timeline-row-actions .icon-btn:disabled{opacity:.3;cursor:not-allowed}
+.timeline-modal-actions{align-items:center}
+@media(max-width:900px){
+  .timeline-edit-row{grid-template-columns:28px minmax(0,1fr) minmax(100px,.65fr)!important}
+  .timeline-edit-row .field:first-of-type{grid-column:2/-1!important}
+  .timeline-row-actions{grid-column:2/-1!important;justify-content:flex-end!important}
+}
+@media(max-width:620px){
+  .timeline-edit-row{grid-template-columns:28px minmax(0,1fr)!important}
+  .timeline-edit-row .field{grid-column:2!important}
+  .timeline-row-actions{grid-column:2!important;justify-content:flex-start!important}
+  .timeline-modal-actions{display:grid!important;grid-template-columns:1fr!important}
+  .timeline-modal-actions button{width:100%!important;justify-content:center!important}
+}

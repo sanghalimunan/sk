@@ -202,3 +202,13 @@ Do not commit node_modules or local .env files.
 - Applies to Learning Point, SV Consultation, Diary and Expert List.
 - Pending images remain local-first until Save/safe sync uploads the original file to Google Drive.
 - Google Drive upload keeps the original MIME type and the local temporary cache is cleaned after successful upload.
+
+
+## v36.7 — Smart Thumbnail Engine
+- Keeps the original photo in Google Drive as the master copy.
+- Generates a lightweight WebP display thumbnail (max 1200 px) for normal app viewing.
+- Cards, diary, SV Consultation, Learning Point and Expert List prefer thumbnails for faster display.
+- Full Learning Point preview still loads the original image.
+- New thumbnails are cached in IndexedDB and uploaded beside the original so other devices can load them quickly.
+- Legacy images without thumbnails generate a device-local thumbnail after the first full download.
+- Includes a dark-thumbnail guard: if browser HDR conversion produces an almost-black thumbnail, strategiSK discards it and falls back to the original image.

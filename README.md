@@ -194,3 +194,11 @@ Do not commit node_modules or local .env files.
 
 ## v36.5
 - SV Consultation numbering now follows chronology: oldest record is Consultation 01 at the bottom; newest record appears at the top with the highest consultation number.
+
+
+## v36.6 — Photo Colour Fix
+- Phone images are stored in original bytes in IndexedDB instead of being forced through canvas/JPEG 80% conversion.
+- Prevents HDR / Display-P3 phone photos from turning extremely dark during upload.
+- Applies to Learning Point, SV Consultation, Diary and Expert List.
+- Pending images remain local-first until Save/safe sync uploads the original file to Google Drive.
+- Google Drive upload keeps the original MIME type and the local temporary cache is cleaned after successful upload.

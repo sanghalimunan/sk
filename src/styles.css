@@ -1331,3 +1331,8 @@ body{font-size:14px;line-height:1.45}
   .timeline-modal-actions{display:grid!important;grid-template-columns:1fr!important}
   .timeline-modal-actions button{width:100%!important;justify-content:center!important}
 }
+
+
+/* v36.6 Photo Colour Fix — preserve original phone image colour */
+.learning-gallery img,.learning-full-image,.consultation-photo-box img,.diary-photo-view img,.calendar-diary-image img,.story-image img,.expert-photo-upload img{filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
+.media-image-shell img{color-scheme:normal!important}
